@@ -1,0 +1,73 @@
+shelter/
+├── animals/
+│   ├── __init__.py                          # Empty file
+│   ├── apps.py                             # From "animals/apps.py" artifact
+│   ├── admin.py                            # From "animals/admin.py" artifact (updated with QR)
+│   ├── models.py                           # From "animals/models.py" artifact (updated with QR)
+│   ├── views.py                            # From "animals/views.py" artifact
+│   ├── forms.py                            # From "animals/forms.py" artifact
+│   ├── urls.py                             # From "animals/urls.py" artifact (updated with QR routes)
+│   ├── qr_scanner.py                       # From "animals/qr_scanner.py" artifact (NEW FILE)
+│   ├── api/
+│   │   ├── __init__.py                     # Empty file
+│   │   ├── views.py                        # From "animals/api/views.py" artifact (updated with QR)
+│   │   └── serializers.py                  # From "animals/api/serializers.py" artifact (updated with QR)
+│   ├── management/
+│   │   ├── __init__.py                     # Empty file
+│   │   └── commands/
+│   │       ├── __init__.py                 # Empty file
+│   │       └── generate_qr_codes.py        # From "animals/management/commands/generate_qr_codes.py" artifact (NEW FILE)
+│   ├── migrations/
+│   │   └── __init__.py                     # Empty file (Django will generate migration files)
+│   └── templates/
+│       └── animals/
+│           └── qr_scanner.html             # From "templates/animals/qr_scanner.html" artifact (NEW FILE)
+├── shelter/
+│   ├── __init__.py                         # Empty file
+│   ├── apps.py                             # From "shelter/apps.py" artifact
+│   ├── admin.py                            # From "shelter/admin.py" artifact
+│   ├── models.py                           # From "shelter/models.py" artifact
+│   ├── views.py                            # From "shelter/views.py" artifact
+│   ├── urls.py                             # From "shelter/urls.py" artifact
+│   ├── management/
+│   │   ├── __init__.py                     # Empty file
+│   │   └── commands/
+│   │       ├── __init__.py                 # Empty file
+│   │       └── create_shelter.py           # From "shelter/management/commands/create_shelter.py" artifact
+│   └── templates/
+│       └── shelter/
+│           └── (template files - create empty directory for now)
+├── shelter_registry/
+│   ├── __init__.py                         # Empty file
+│   ├── settings.py                         # From "shelter_registry/settings.py" artifact
+│   ├── urls.py                             # From "shelter_registry/urls.py" artifact (updated with health check)
+│   ├── urls_public.py                      # From "shelter_registry/urls_public.py" artifact
+│   ├── wsgi.py                             # From "shelter_registry/wsgi.py" artifact
+│   └── health.py                           # From "shelter_registry/health.py" artifact (NEW FILE)
+├── static/
+│   └── admin/
+│       └── js/
+│           └── qr_admin.js                 # From "static/admin/js/qr_admin.js" artifact (NEW FILE)
+├── templates/
+│   ├── base/
+│   │   └── base.html                       # Basic HTML template (create this)
+│   ├── animals/
+│   │   └── qr_scanner.html                 # From QR scanner template artifact
+│   ├── shelter/
+│   │   └── (shelter templates - create empty for now)
+│   └── public/
+│       └── (public templates - create empty for now)
+├── media/
+│   ├── animal_photos/                      # Empty directory for uploaded photos
+│   └── qr_codes/                           # Empty directory for QR code images
+├── staticfiles/                            # Empty directory for collected static files
+├── logs/                                   # Empty directory for log files
+├── backups/                                # Empty directory for database backups
+├── requirements.txt                        # From "requirements.txt" artifact (updated with qrcode)
+├── manage.py                              # From "manage.py" artifact
+├── Dockerfile                             # From "Dockerfile" artifact
+├── docker-compose.yml                     # From "docker-compose.yml" artifact (updated with QR processor)
+├── nginx.conf                             # From "nginx.conf" artifact
+├── .env                                   # Create this with your environment variables
+├── .gitignore                             # Create this to ignore sensitive files
+└── DEPLOYMENT_GUIDE.md                    # From "DEPLOYMENT_GUIDE.md" artifact (updated)

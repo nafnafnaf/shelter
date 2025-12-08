@@ -1,0 +1,24 @@
+# Create these empty __init__.py files in the following directories:
+
+# shelter_registry/__init__.py
+# (empty file)
+
+# animals/__init__.py  
+# (empty file)
+
+# animals/api/__init__.py
+# (empty file)
+
+# animals/management/__init__.py
+# (empty file)
+
+# shelter/__init__.py
+# (empty file)
+
+# shelter/management/__init__.py
+# (empty file)
+
+# shelter/management/commands/__init__.py
+# (empty file)
+
+# These files are needed to make Python recognize the directories as packages.
