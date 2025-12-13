@@ -8,7 +8,20 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production'
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']  # Configure appropriately for production
+# CSRF Trusted Origins - Required for Django 4.0+ with HTTPS/Cloudflare
+CSRF_TRUSTED_ORIGINS = [
+    'https://shelter.nafnaf.gr',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
+# Cookie security settings for HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False  # Must be False for CSRF to work
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 # Application definition
 SHARED_APPS = [
     'django_tenants',
