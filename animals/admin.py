@@ -61,48 +61,35 @@ class AnimalAdmin(admin.ModelAdmin):
             readonly.append('chip_id')
         return readonly
     def changelist_view(self, request, extra_context=None):
-    """
-    Override to add statistics to the changelist page
-    """
-    from django.db.models import Count, Q
+        """Override to add statistics to the changelist page"""
+        from django.db.models import Count, Q
     
-    # Calculate statistics
-    stats = {
-        'total': Animal.objects.count(),
-        
-        # By species
-        'dogs': Animal.objects.filter(species='dog').count(),
-        'cats': Animal.objects.filter(species='cat').count(),
-        'other_species': Animal.objects.filter(species='other').count(),
-        
-        # By gender
-        'males': Animal.objects.filter(gender='male').count(),
-        'females': Animal.objects.filter(gender='female').count(),
-        
-        # By sterilization
-        'sterilized': Animal.objects.filter(sterilization_status='yes').count(),
-        'not_sterilized': Animal.objects.filter(sterilization_status='no').count(),
-        'sterilization_scheduled': Animal.objects.filter(sterilization_status='scheduled').count(),
-        
-        # Health
-        'injured': Animal.objects.filter(injured=True).count(),
-        'healthy': Animal.objects.filter(injured=False).count(),
-        
-        # Adoption
-        'available': Animal.objects.filter(adoption_status='available').count(),
-        'pending': Animal.objects.filter(adoption_status='pending').count(),
-        'adopted': Animal.objects.filter(adoption_status='adopted').count(),
-        'not_for_adoption': Animal.objects.filter(adoption_status='not_for_adoption').count(),
-        
-        # Public visibility
-        'public': Animal.objects.filter(public_visibility=True).count(),
-        'private': Animal.objects.filter(public_visibility=False).count(),
-    }
+        stats = {
+            'total': Animal.objects.count(),
+            'dogs': Animal.objects.filter(species='dog').count(),
+            'cats': Animal.objects.filter(species='cat').count(),
+            'other_species': Animal.objects.filter(species='other').count(),
+            'males': Animal.objects.filter(gender='male').count(),
+            'females': Animal.objects.filter(gender='female').count(),
+            'sterilized': Animal.objects.filter(sterilization_status='yes').count(),
+            'not_sterilized': Animal.objects.filter(sterilization_status='no').count(),
+            'sterilization_scheduled': Animal.objects.filter(sterilization_status='scheduled').count(),
+            'injured': Animal.objects.filter(injured=True).count(),
+            'healthy': Animal.objects.filter(injured=False).count(),
+            'available': Animal.objects.filter(adoption_status='available').count(),
+            'pending': Animal.objects.filter(adoption_status='pending').count(),
+            'adopted': Animal.objects.filter(adoption_status='adopted').count(),
+            'not_for_adoption': Animal.objects.filter(adoption_status='not_for_adoption').count(),
+            'public': Animal.objects.filter(public_visibility=True).count(),
+            'private': Animal.objects.filter(public_visibility=False).count(),
+        }
     
-    extra_context = extra_context or {}
-    extra_context['stats'] = stats
-    return super().changelist_view(request, extra_context=extra_context)
-    
+        extra_context = extra_context or {}
+        extra_context['stats'] = stats
+        return super().changelist_view(request, extra_context=extra_context)
+
+
+
     def age_display(self, obj):
         if obj.age_numeric:
             return f"{obj.age_numeric} έτη"
