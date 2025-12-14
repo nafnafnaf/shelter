@@ -58,7 +58,6 @@ class AnimalAdmin(admin.ModelAdmin):
         if obj:  # Editing existing animal (obj exists)
             readonly.append('chip_id')
         return readonly
-    
     def age_display(self, obj):
         if obj.age_numeric:
             return f"{obj.age_numeric} έτη"
@@ -100,24 +99,6 @@ class AnimalAdmin(admin.ModelAdmin):
         if not change:  # Only set created_by on creation
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
-    
-    def save_formset(self, request, form, formset, change):
-        """
-        Override to prevent chip_id validation errors when saving inline photos/medical records.
-        This is a known Django issue where inline formsets re-validate parent model's unique fields.
-        """
-        instances = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        for instance in instances:
-            # Set the uploaded_by/created_by for new instances
-            if not instance.pk:
-                if hasattr(instance, 'uploaded_by'):
-                    instance.uploaded_by = request.user
-                elif hasattr(instance, 'created_by'):
-                    instance.created_by = request.user
-            instance.save()
-        formset.save_m2m()
     
     def regenerate_qr_codes(self, request, queryset):
         """Admin action to regenerate QR codes for selected animals"""
