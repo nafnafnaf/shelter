@@ -144,8 +144,8 @@ class AnimalAdmin(admin.ModelAdmin):
         self.message_user(request, f'Successfully made {count} animals private.')
     make_private.short_description = 'Make selected animals private'
     
-    class Media:
-        js = ('admin/js/qr_admin.js',)
+    #class Media:
+     #   js = ('admin/js/qr_admin.js',)
 
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
