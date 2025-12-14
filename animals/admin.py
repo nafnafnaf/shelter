@@ -48,6 +48,16 @@ class AnimalAdmin(admin.ModelAdmin):
     
     actions = ['regenerate_qr_codes', 'make_public', 'make_private']
     
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Make chip_id readonly when editing existing animal to prevent
+        validation errors with inline formsets. Chip_id remains editable
+        when creating new animals.
+        """
+        readonly = list(self.readonly_fields)
+        if obj:  # Editing existing animal (obj exists)
+            readonly.append('chip_id')
+        return readonly
     def age_display(self, obj):
         if obj.age_numeric:
             return f"{obj.age_numeric} έτη"
