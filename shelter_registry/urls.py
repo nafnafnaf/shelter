@@ -13,11 +13,10 @@ router.register(r'medical-records', MedicalRecordViewSet, basename='medicalrecor
 router.register(r'photos', AnimalPhotoViewSet, basename='animalphoto')
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='public/index.html'), name='home'),
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls')),
-    path('', include('animals.urls')),
+    path('', include('animals.urls')),  # Include animals app URLs (adopt/, qr/, etc.)
 ]
 
 # Serve media files in development
