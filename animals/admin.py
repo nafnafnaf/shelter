@@ -60,6 +60,23 @@ class AnimalAdmin(admin.ModelAdmin):
         if obj:  # Editing existing animal (obj exists)
             readonly.append('chip_id')
         return readonly
+    def photo_display(self, obj):
+        """Display animal's primary photo or first available photo as thumbnail"""
+    # Try to get primary photo first, otherwise get first photo
+        photo = obj.photos.filter(is_primary=True).first() or obj.photos.first()
+    
+        if photo and photo.image:
+           return format_html(
+                '<img src="{}" width="60" height="60" style="object-fit: cover; border-radius: 4px; border: 1px solid #ccc;" title="{}"/>',
+                photo.image.url,
+                obj.name
+            )
+        return format_html('<span style="color: #999;">📷 No photo</span>')
+
+    photo_display.short_description = 'Photo'
+
+def changelist_view(self, request, extra_context=None):
+    
     def changelist_view(self, request, extra_context=None):
         """Override to add statistics to the changelist page"""
         from django.db.models import Count, Q
@@ -180,8 +197,7 @@ class AnimalAdmin(admin.ModelAdmin):
 
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
-    list_display = ['animal', 'record_type', 'date_recorded', 'created_by']
-    list_filter = ['record_type', 'date_recorded']
+    list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     search_fields = ['animal__name', 'animal__chip_id', 'description']
     readonly_fields = ['created_by', 'created_at']
     
