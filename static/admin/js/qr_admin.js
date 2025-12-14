@@ -1,5 +1,4 @@
 // JavaScript for QR code admin functionality
-
 function regenerateQR(animalId) {
     if (!confirm('Are you sure you want to regenerate the QR code for this animal?')) {
         return;
