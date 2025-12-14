@@ -10,6 +10,8 @@ class MedicalRecordInline(admin.TabularInline):
 class AnimalPhotoInline(admin.TabularInline):
     model = AnimalPhoto
     extra = 1
+    fields = ['image', 'is_primary', 'caption']  # Only show these fields
+    readonly_fields = []  # uploaded_by and uploaded_at handled automatically
 
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
