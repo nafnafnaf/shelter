@@ -1,27 +1,99 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}QR Code Scanner - Animal Shelter{% endblock %}
-
-{% block content %}
-<div class="qr-scanner-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-    <h1 style="text-align: center; margin-bottom: 30px;">🔍 QR Code Scanner</h1>
-    
-    <div id="scanner-section">
-        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h2 style="margin-top: 0;">Scan Animal QR Code</h2>
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner - Animal Shelter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .qr-scanner-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .scanner-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #qr-video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            background: #000;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #28a745;
+            margin-bottom: 20px;
+        }
+        .error-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+            margin-bottom: 20px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-scanner-container">
+        <h1>🔍 QR Code Scanner</h1>
+        
+        <div class="scanner-box">
+            <h2>Scan Animal QR Code</h2>
             <p>Position the QR code in front of your camera to scan</p>
             
-            <div id="video-container" style="position: relative; margin: 20px 0;">
-                <video id="qr-video" style="width: 100%; max-width: 500px; border-radius: 8px; display: block; margin: 0 auto;"></video>
+            <div style="position: relative; margin: 20px 0;">
+                <video id="qr-video"></video>
                 <canvas id="qr-canvas" style="display: none;"></canvas>
             </div>
             
             <div style="text-align: center; margin: 20px 0;">
-                <button id="start-scan" onclick="startScanning()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; margin-right: 10px;">
+                <button id="start-scan" onclick="startScanning()" class="btn-success">
                     Start Camera
                 </button>
-                <button id="stop-scan" onclick="stopScanning()" style="background: #dc3545; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; display: none;">
+                <button id="stop-scan" onclick="stopScanning()" class="btn-danger" style="display: none;">
                     Stop Camera
                 </button>
             </div>
@@ -29,178 +101,155 @@
             <div id="scan-status" style="text-align: center; margin: 10px 0; font-weight: bold;"></div>
         </div>
         
-        <div id="result-section" style="display: none; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; margin-bottom: 20px;">
+        <div id="result-section" class="result-box" style="display: none;">
             <h2 style="margin-top: 0; color: #28a745;">✓ Animal Found</h2>
             <div id="animal-info"></div>
         </div>
         
-        <div id="error-section" style="display: none; background: #fff3cd; padding: 20px; border-radius: 8px; border: 2px solid #ffc107; margin-bottom: 20px;">
+        <div id="error-section" class="error-box" style="display: none;">
             <h2 style="margin-top: 0; color: #856404;">⚠ Error</h2>
             <div id="error-message"></div>
         </div>
-    </div>
-    
-    <div style="background: #e9ecef; padding: 20px; border-radius: 8px; margin-top: 30px;">
-        <h3>How to use:</h3>
-        <ol style="line-height: 1.8;">
-            <li>Click "Start Camera" to activate your device's camera</li>
-            <li>Allow camera access when prompted by your browser</li>
-            <li>Position the QR code within the camera view</li>
-            <li>The scanner will automatically detect and read the QR code</li>
-            <li>Animal information will be displayed below</li>
-        </ol>
-    </div>
-</div>
-
-<script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
-<script>
-let video = document.getElementById('qr-video');
-let canvas = document.getElementById('qr-canvas');
-let ctx = canvas.getContext('2d');
-let scanning = false;
-let stream = null;
-
-function getCsrfToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-}
-
-async function startScanning() {
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment' } 
-        });
         
-        video.srcObject = stream;
-        video.setAttribute('playsinline', true);
-        video.play();
+        <div class="scanner-box" style="background: #e9ecef;">
+            <h3>How to use:</h3>
+            <ol style="line-height: 1.8;">
+                <li>Click "Start Camera" to activate your device's camera</li>
+                <li>Allow camera access when prompted by your browser</li>
+                <li>Position the QR code within the camera view</li>
+                <li>The scanner will automatically detect and read the QR code</li>
+                <li>Animal information will be displayed below</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script>
+    let video = document.getElementById('qr-video');
+    let canvas = document.getElementById('qr-canvas');
+    let ctx = canvas.getContext('2d');
+    let scanning = false;
+    let stream = null;
+
+    async function startScanning() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true);
+            video.play();
+            
+            scanning = true;
+            document.getElementById('start-scan').style.display = 'none';
+            document.getElementById('stop-scan').style.display = 'inline-block';
+            document.getElementById('scan-status').textContent = '📸 Camera active - scanning for QR codes...';
+            document.getElementById('scan-status').style.color = '#28a745';
+            
+            requestAnimationFrame(tick);
+        } catch (err) {
+            showError('Unable to access camera: ' + err.message);
+            console.error(err);
+        }
+    }
+
+    function stopScanning() {
+        scanning = false;
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        video.srcObject = null;
         
-        scanning = true;
-        document.getElementById('start-scan').style.display = 'none';
-        document.getElementById('stop-scan').style.display = 'inline-block';
-        document.getElementById('scan-status').textContent = '📸 Camera active - scanning for QR codes...';
-        document.getElementById('scan-status').style.color = '#28a745';
+        document.getElementById('start-scan').style.display = 'inline-block';
+        document.getElementById('stop-scan').style.display = 'none';
+        document.getElementById('scan-status').textContent = '';
+    }
+
+    function tick() {
+        if (!scanning) return;
+        
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let code = jsQR(imageData.data, imageData.width, imageData.height);
+            
+            if (code) {
+                handleQRCode(code.data);
+                return;
+            }
+        }
         
         requestAnimationFrame(tick);
-    } catch (err) {
-        showError('Unable to access camera: ' + err.message);
-        console.error(err);
     }
-}
 
-function stopScanning() {
-    scanning = false;
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-    }
-    video.srcObject = null;
-    
-    document.getElementById('start-scan').style.display = 'inline-block';
-    document.getElementById('stop-scan').style.display = 'none';
-    document.getElementById('scan-status').textContent = '';
-}
-
-function tick() {
-    if (!scanning) return;
-    
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.height = video.videoHeight;
-        canvas.width = video.videoWidth;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    async function handleQRCode(qrData) {
+        stopScanning();
+        document.getElementById('scan-status').textContent = '🔍 Processing QR code...';
+        document.getElementById('scan-status').style.color = '#007bff';
         
-        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let code = jsQR(imageData.data, imageData.width, imageData.height);
-        
-        if (code) {
-            handleQRCode(code.data);
-            return; // Stop scanning after finding a code
+        try {
+            const response = await fetch('/api/v1/qr/scan/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ qr_data: qrData })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAnimalInfo(data.animal);
+            } else {
+                showError(data.error || 'Animal not found');
+            }
+        } catch (err) {
+            showError('Error processing QR code: ' + err.message);
         }
     }
-    
-    requestAnimationFrame(tick);
-}
 
-async function handleQRCode(qrData) {
-    stopScanning();
-    document.getElementById('scan-status').textContent = '🔍 Processing QR code...';
-    document.getElementById('scan-status').style.color = '#007bff';
-    
-    try {
-        const response = await fetch('/api/v1/qr/scan/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ qr_data: qrData })
-        });
+    function showAnimalInfo(animal) {
+        document.getElementById('result-section').style.display = 'block';
+        document.getElementById('error-section').style.display = 'none';
+        document.getElementById('scan-status').textContent = '';
         
-        const data = await response.json();
+        let html = `
+            <div class="info-grid">
+                ${animal.photo_url ? `<div style="grid-column: 1 / -1; text-align: center; margin-bottom: 20px;"><img src="${animal.photo_url}" style="max-width: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>` : ''}
+                <strong>Name:</strong> <span>${animal.name}</span>
+                <strong>Chip ID:</strong> <span>${animal.chip_id}</span>
+                <strong>Species:</strong> <span>${animal.species}</span>
+                <strong>Gender:</strong> <span>${animal.gender}</span>
+                <strong>Age:</strong> <span>${animal.age}</span>
+                <strong>Cage:</strong> <span>${animal.cage_number}</span>
+                <strong>Behavior:</strong> <span>${animal.behavior}</span>
+                <strong>Vaccination:</strong> <span>${animal.vaccination_status}</span>
+                <strong>Sterilization:</strong> <span>${animal.sterilization_status}</span>
+                <strong>Adoption Status:</strong> <span>${animal.adoption_status}</span>
+                <strong>Injured:</strong> <span>${animal.injured ? 'Yes ⚠️' : 'No ✓'}</span>
+                <strong>Entry Date:</strong> <span>${animal.entry_date}</span>
+            </div>
+            ${animal.public_url ? `<div style="margin-top: 20px; text-align: center;"><a href="${animal.public_url}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">View Public Profile</a></div>` : ''}
+        `;
         
-        if (data.success) {
-            showAnimalInfo(data.animal);
-        } else {
-            showError(data.error || 'Animal not found');
-        }
-    } catch (err) {
-        showError('Error processing QR code: ' + err.message);
+        document.getElementById('animal-info').innerHTML = html;
+        document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
     }
-}
 
-function showAnimalInfo(animal) {
-    document.getElementById('result-section').style.display = 'block';
-    document.getElementById('error-section').style.display = 'none';
-    document.getElementById('scan-status').textContent = '';
-    
-    let html = `
-        <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 16px;">
-            ${animal.photo_url ? `<div style="grid-column: 1 / -1; text-align: center; margin-bottom: 20px;"><img src="${animal.photo_url}" style="max-width: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>` : ''}
-            <strong>Name:</strong> <span>${animal.name}</span>
-            <strong>Chip ID:</strong> <span>${animal.chip_id}</span>
-            <strong>Species:</strong> <span>${animal.species}</span>
-            <strong>Gender:</strong> <span>${animal.gender}</span>
-            <strong>Age:</strong> <span>${animal.age}</span>
-            <strong>Cage:</strong> <span>${animal.cage_number}</span>
-            <strong>Behavior:</strong> <span>${animal.behavior}</span>
-            <strong>Vaccination:</strong> <span>${animal.vaccination_status}</span>
-            <strong>Sterilization:</strong> <span>${animal.sterilization_status}</span>
-            <strong>Adoption Status:</strong> <span>${animal.adoption_status}</span>
-            <strong>Injured:</strong> <span>${animal.injured ? 'Yes ⚠️' : 'No ✓'}</span>
-            <strong>Entry Date:</strong> <span>${animal.entry_date}</span>
-        </div>
-        ${animal.public_url ? `<div style="margin-top: 20px; text-align: center;"><a href="${animal.public_url}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">View Public Profile</a></div>` : ''}
-    `;
-    
-    document.getElementById('animal-info').innerHTML = html;
-    
-    // Scroll to result
-    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
-}
+    function showError(message) {
+        document.getElementById('error-section').style.display = 'block';
+        document.getElementById('result-section').style.display = 'none';
+        document.getElementById('scan-status').textContent = '';
+        document.getElementById('error-message').textContent = message;
+        document.getElementById('error-section').scrollIntoView({ behavior: 'smooth' });
+    }
 
-function showError(message) {
-    document.getElementById('error-section').style.display = 'block';
-    document.getElementById('result-section').style.display = 'none';
-    document.getElementById('scan-status').textContent = '';
-    document.getElementById('error-message').textContent = message;
-    
-    // Scroll to error
-    document.getElementById('error-section').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Clean up on page unload
-window.addEventListener('beforeunload', stopScanning);
-</script>
-
-<style>
-#qr-video {
-    background: #000;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-button:active {
-    transform: scale(0.98);
-}
-</style>
-{% endblock %}
+    window.addEventListener('beforeunload', stopScanning);
+    </script>
+</body>
+</html>
