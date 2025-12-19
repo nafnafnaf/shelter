@@ -216,3 +216,88 @@ class AnimalPhoto(models.Model):
     
     def __str__(self):
         return f"Photo of {self.animal.name}"
+
+
+class Vaccination(models.Model):
+    """Καταγραφή εμβολιασμών ζώων"""
+    VACCINE_CHOICES = [
+        ('rabies', 'Λύσσα'),
+        ('distemper', 'Νόσος του Carré'),
+        ('parvovirus', 'Παρβοϊός'),
+        ('hepatitis', 'Ηπατίτιδα'),
+        ('leptospirosis', 'Λεπτοσπείρωση'),
+        ('parainfluenza', 'Παραγρίπη'),
+        ('coronavirus', 'Κορωνοϊός'),
+        ('bordetella', 'Μπορντετέλλα'),
+        ('feline_leukemia', 'Λευχαιμία Γάτας'),
+        ('feline_distemper', 'Πανλευκοπενία'),
+        ('calicivirus', 'Καλισιϊός'),
+        ('rhinotracheitis', 'Ρινοτραχειίτιδα'),
+        ('chlamydia', 'Χλαμύδια'),
+        ('fip', 'Λοιμώδης Περιτονίτιδα'),
+        ('other', 'Άλλο'),
+    ]
+    
+    animal = models.ForeignKey(
+        Animal, 
+        on_delete=models.CASCADE, 
+        related_name='vaccinations',
+        verbose_name='Ζώο'
+    )
+    vaccine_name = models.CharField(
+        max_length=50, 
+        choices=VACCINE_CHOICES, 
+        verbose_name='Εμβόλιο'
+    )
+    other_vaccine_name = models.CharField(
+        max_length=100, 
+        blank=True, 
+        verbose_name='Όνομα Εμβολίου (αν επιλέξατε Άλλο)'
+    )
+    date_administered = models.DateField(
+        verbose_name='Ημερομηνία Χορήγησης'
+    )
+    next_due_date = models.DateField(
+        null=True, 
+        blank=True, 
+        verbose_name='Επόμενη Δόση'
+    )
+    administered_by = models.CharField(
+        max_length=100, 
+        blank=True, 
+        verbose_name='Κτηνίατρος'
+    )
+    batch_number = models.CharField(
+        max_length=50, 
+        blank=True, 
+        verbose_name='Αριθμός Παρτίδας'
+    )
+    notes = models.TextField(
+        blank=True, 
+        verbose_name='Σημειώσεις'
+    )
+    created_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        verbose_name='Καταχωρήθηκε από'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name='Ημερομηνία Καταχώρησης'
+    )
+    
+    class Meta:
+        ordering = ['-date_administered']
+        verbose_name = 'Εμβολιασμός'
+        verbose_name_plural = 'Εμβολιασμοί'
+    
+    def __str__(self):
+        vaccine_display = self.other_vaccine_name if self.vaccine_name == 'other' else self.get_vaccine_name_display()
+        return f"{self.animal.name} - {vaccine_display} ({self.date_administered})"
+    
+    def get_vaccine_display_name(self):
+        """Επιστρέφει το όνομα του εμβολίου για εμφάνιση"""
+        if self.vaccine_name == 'other' and self.other_vaccine_name:
+            return self.other_vaccine_name
+        return self.get_vaccine_name_display()
