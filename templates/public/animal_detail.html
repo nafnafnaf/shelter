@@ -86,8 +86,11 @@
                     {% endif %}
 
                     <div class="info-grid">
-                        <strong>Αναγνωριστικό:</strong>
-                        <span>{{ animal.chip_id }}</span>
+                        <strong> Όνομα :</strong>
+                        <span>{{ animal.name}}
+
+                        <strong>Chip ID:</strong>
+                        <span>*****{{ animal.chip_id|slice:"-3" }}</span>
 
                         <strong>Είδος:</strong>
                         <span>{{ animal.get_species_display }}</span>
