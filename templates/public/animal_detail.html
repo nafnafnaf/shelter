@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ animal.name }} - Υιοθεσία</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 20px; }
+        .back-btn { background: #34495e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; }
+        .back-btn:hover { background: #4a5f7f; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .animal-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .animal-header { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 40px; }
+        .photos-section { }
+        .main-photo { width: 100%; height: 400px; object-fit: cover; border-radius: 8px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 6em; }
+        .thumbnail-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .thumbnail { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+        .thumbnail:hover { border-color: #3498db; }
+        .info-section { }
+        .animal-name { font-size: 2.5em; color: #2c3e50; margin-bottom: 10px; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; }
+        .status-available { background: #27ae60; color: white; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-adopted { background: #95a5a6; color: white; }
+        .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 15px 30px; font-size: 1.1em; line-height: 1.6; }
+        .info-grid strong { color: #2c3e50; }
+        .section { padding: 40px; border-top: 1px solid #eee; }
+        .section-title { font-size: 1.8em; color: #2c3e50; margin-bottom: 20px; }
+        .medical-records { display: grid; gap: 15px; }
+        .medical-record { background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #3498db; }
+        .medical-record-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .record-type { font-weight: bold; color: #2c3e50; }
+        .record-date { color: #7f8c8d; }
+        .qr-section { text-align: center; padding: 30px; background: #f8f9fa; }
+        .qr-code { max-width: 300px; margin: 20px auto; }
+        .contact-section { background: #ecf0f1; }
+        .contact-info { font-size: 1.2em; line-height: 2; }
+        @media (max-width: 768px) {
+            .animal-header { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="{% url 'animals:public_adoption' %}" class="back-btn">← Επιστροφή στη Λίστα</a>
+            <h1>Λεπτομέρειες Ζώου</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="animal-container">
+            <div class="animal-header">
+                <div class="photos-section">
+                    {% with primary_photo=animal.photos.first %}
+                        {% if primary_photo %}
+                            <img src="{{ primary_photo.image.url }}" alt="{{ animal.name }}" class="main-photo" id="mainPhoto">
+                        {% else %}
+                            <div class="main-photo">
+                                {% if animal.species == 'dog' %}🐕{% elif animal.species == 'cat' %}🐈{% else %}🦎{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% if animal.photos.all.count > 1 %}
+                    <div class="thumbnail-grid">
+                        {% for photo in animal.photos.all %}
+                            <img src="{{ photo.image.url }}" alt="{{ animal.name }}" class="thumbnail" onclick="document.getElementById('mainPhoto').src='{{ photo.image.url }}'">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="info-section">
+                    <h1 class="animal-name">{{ animal.name }}</h1>
+                    
+                    {% if animal.adoption_status == 'available' %}
+                        <span class="status-badge status-available">✓ Διαθέσιμο για Υιοθεσία</span>
+                    {% elif animal.adoption_status == 'pending' %}
+                        <span class="status-badge status-pending">⏳ Εκκρεμεί Υιοθεσία</span>
+                    {% elif animal.adoption_status == 'adopted' %}
+                        <span class="status-badge status-adopted">🏠 Υιοθετήθηκε</span>
+                    {% endif %}
+
+                    <div class="info-grid">
+                        <strong>Αναγνωριστικό:</strong>
+                        <span>{{ animal.chip_id }}</span>
+
+                        <strong>Είδος:</strong>
+                        <span>{{ animal.get_species_display }}</span>
+
+                        <strong>Φύλο:</strong>
+                        <span>{{ animal.get_gender_display }}</span>
+
+                        <strong>Ηλικία:</strong>
+                        <span>
+                            {% if animal.age_numeric %}
+                                {{ animal.age_numeric }} έτη
+                            {% else %}
+                                {{ animal.get_age_category_display }}
+                            {% endif %}
+                        </span>
+
+                        <strong>Συμπεριφορά:</strong>
+                        <span>{{ animal.get_behavior_display }}</span>
+
+                        <strong>Εμβολιασμός:</strong>
+                        <span>{{ animal.get_vaccination_status_display }}</span>
+
+                        <strong>Στείρωση:</strong>
+                        <span>{{ animal.get_sterilization_status_display }}</span>
+
+                        {% if animal.cage_number %}
+                        <strong>Κλουβί:</strong>
+                        <span>{{ animal.cage_number }}</span>
+                        {% endif %}
+
+                        <strong>Κατάσταση Υγείας:</strong>
+                        <span>
+                            {% if animal.injured %}
+                                ⚠️ Τραυματισμένο
+                            {% else %}
+                                ✓ Υγιές
+                            {% endif %}
+                        </span>
+
+                        <strong>Ημερομηνία Εισαγωγής:</strong>
+                        <span>{{ animal.entry_date|date:"d/m/Y" }}</span>
+
+                        {% if animal.capture_location %}
+                        <strong>Τοποθεσία Εύρεσης:</strong>
+                        <span>{{ animal.capture_location }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if animal.medical_records.all %}
+            <div class="section">
+                <h2 class="section-title">📋 Ιατρικό Ιστορικό</h2>
+                <div class="medical-records">
+                    {% for record in animal.medical_records.all %}
+                    <div class="medical-record">
+                        <div class="medical-record-header">
+                            <span class="record-type">{{ record.get_record_type_display }}</span>
+                            <span class="record-date">{{ record.date_recorded|date:"d/m/Y" }}</span>
+                        </div>
+                        <div>{{ record.description }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if animal.qr_code %}
+            <div class="section qr-section">
+                <h2 class="section-title">QR Code</h2>
+                <p>Σκανάρετε για γρήγορη πρόσβαση στις πληροφορίες</p>
+                <div class="qr-code">
+                    <img src="{{ animal.qr_code.url }}" alt="QR Code" style="width: 100%; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="section contact-section">
+                <h2 class="section-title">📞 Επικοινωνία</h2>
+                <div class="contact-info">
+                    <p><strong>Ενδιαφέρεστε να υιοθετήσετε το {{ animal.name }};</strong></p>
+                    <p>Επικοινωνήστε με το καταφύγιο για περισσότερες πληροφορίες.</p>
+                    {% if animal.finder_contact %}
+                    <p><strong>Στοιχεία Επικοινωνίας:</strong> {{ animal.finder_contact }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
