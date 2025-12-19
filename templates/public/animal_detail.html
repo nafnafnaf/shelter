@@ -106,9 +106,16 @@
 
                         <strong>Συμπεριφορά:</strong>
                         <span>{{ animal.get_behavior_display }}</span>
-
-                        <strong>Εμβολιασμός:</strong>
-                        <span>{{ animal.get_vaccination_status_display }}</span>
+                        <strong>Τελευταίοι Εμβολιασμοί:</strong>
+                        <span>
+                            {% if animal.vaccinations.exists %}
+                                {% for vaccine in animal.vaccinations.all|slice:":2" %}
+                                    <div>• {{ vaccine.get_vaccine_display_name }} - {{ vaccine.date_administered|date:"d/m/Y" }}</div>
+                                {% endfor %}
+                            {% else %}
+                                Χωρίς καταγεγραμμένους εμβολιασμούς
+                            {% endif %}
+                        </span>
 
                         <strong>Στείρωση:</strong>
                         <span>{{ animal.get_sterilization_status_display }}</span>
