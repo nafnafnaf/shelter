@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import Animal, MedicalRecord, AnimalPhoto
+from .models import Animal, MedicalRecord, AnimalPhoto, Vaccination
 
 class MedicalRecordInline(admin.TabularInline):
     model = MedicalRecord
@@ -12,13 +12,17 @@ class AnimalPhotoInline(admin.TabularInline):
     extra = 1
     fields = ['image', 'is_primary', 'caption']  # Only show these fields
     readonly_fields = []  # uploaded_by and uploaded_at handled automatically
-
+class VaccinationInline(admin.TabularInline):
+    model = Vaccination
+    extra = 1
+    fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'batch_number', 'notes']
+    readonly_fields = []
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status']
     search_fields = ['name', 'chip_id', 'capture_location']
-    inlines = [MedicalRecordInline, AnimalPhotoInline]
+    inlines = [MedicalRecordInline, AnimalPhotoInline, VaccinationInline]
     readonly_fields = ['created_by', 'created_at', 'updated_at', 'entry_date', 'qr_code_preview']
     
     fieldsets = (
@@ -223,4 +227,15 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.uploaded_by = request.user
+        super().save_model(request, obj, form, change)
+@admin.register(Vaccination)
+class VaccinationAdmin(admin.ModelAdmin):
+    list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
+    list_filter = ['vaccine_name', 'date_administered']
+    search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
+    readonly_fields = ['created_by', 'created_at']
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
         super().save_model(request, obj, form, change)
