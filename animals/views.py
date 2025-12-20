@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -162,3 +162,7 @@ class PublicAnimalDetailView(DetailView):
     
     def get_queryset(self):
         return Animal.objects.filter(public_visibility=True)
+
+# Landing page (no authentication required)
+class LandingPageView(TemplateView):
+    template_name = 'public/index.html'
