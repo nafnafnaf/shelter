@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Καταφύγιο Εθελοντών Δήμου Καβάλας - Πολύστυλο</title>
+    <title>Καταφύγιο Αδέσποτων Ζώων Δήμου Καβάλας  </title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -101,6 +101,10 @@
             color: #7f8c8d;
             line-height: 1.6;
         }
+        .feature:hover {
+            transform: translateY(-5px);
+            background: #e9ecef;
+        }
     </style>
 </head>
 <body>
@@ -132,11 +136,13 @@
                 <h3>Υιοθεσίες</h3>
                 <p>Βοηθούμε τα ζώα να βρουν αγαπημένες οικογένειες</p>
             </div>
-            <div class="feature">
-                <div class="feature-icon">📋</div>
-                <h3>Διαχείριση</h3>
-                <p>Σύστημα καταγραφής και παρακολούθησης</p>
-            </div>
+            <a href="/admin/" style="text-decoration: none; color: inherit;">
+                <div class="feature" style="cursor: pointer; transition: transform 0.3s;">
+                    <div class="feature-icon">📋</div>
+                    <h3>Διαχείριση</h3>
+                    <p>Σύστημα καταγραφής και παρακολούθησης</p>
+                </div>
+            </a>
         </div>
     </div>
 </body>
