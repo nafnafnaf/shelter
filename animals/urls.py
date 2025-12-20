@@ -1,5 +1,5 @@
 from django.urls import path
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from . import views
 from .qr_scanner import scan_qr_code, qr_scanner_page, public_qr_lookup
 
@@ -29,5 +29,8 @@ urlpatterns = [
     path('animal/<int:animal_id>/photos/', views.AnimalPhotoListView.as_view(), name='animal_photos'),
     
     # Redirect root to public adoption page
-    path('', RedirectView.as_view(url='/adopt/', permanent=False)),
-]
+    path('', views.LandingPageView.as_view(), name='landing_page'), 
+# Landing page (no authentication required)
+class LandingPageView(TemplateView):
+    template_name = 'public/index.html'
+] 
