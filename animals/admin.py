@@ -203,10 +203,18 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     search_fields = ['animal__name', 'animal__chip_id', 'description']
     readonly_fields = ['created_by', 'created_at']
     
+    def changelist_view(self, request, extra_context=None):
+        from django_tenants.utils import schema_context
+        from django.db import connection
+        # Force the correct schema
+        with schema_context(connection.tenant.schema_name):
+            return super().changelist_view(request, extra_context=extra_context)
+    
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
 
 @admin.register(AnimalPhoto)
 class AnimalPhotoAdmin(admin.ModelAdmin):
@@ -214,6 +222,12 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
     list_filter = ['is_primary', 'uploaded_at']
     search_fields = ['animal__name', 'animal__chip_id', 'caption']
     readonly_fields = ['uploaded_by', 'uploaded_at', 'image_preview']
+    
+    def changelist_view(self, request, extra_context=None):
+        from django_tenants.utils import schema_context
+        from django.db import connection
+        with schema_context(connection.tenant.schema_name):
+            return super().changelist_view(request, extra_context=extra_context)
     
     def image_preview(self, obj):
         if obj.image:
@@ -228,12 +242,20 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
         if not change:
             obj.uploaded_by = request.user
         super().save_model(request, obj, form, change)
+
+
 @admin.register(Vaccination)
 class VaccinationAdmin(admin.ModelAdmin):
     list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
     list_filter = ['vaccine_name', 'date_administered']
     search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
     readonly_fields = ['created_by', 'created_at']
+    
+    def changelist_view(self, request, extra_context=None):
+        from django_tenants.utils import schema_context
+        from django.db import connection
+        with schema_context(connection.tenant.schema_name):
+            return super().changelist_view(request, extra_context=extra_context)
     
     def save_model(self, request, obj, form, change):
         if not change:
