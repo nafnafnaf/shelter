@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']  # Configure appropriately for production
 # CSRF Trusted Origins - Required for Django 4.0+ with HTTPS/Cloudflare
