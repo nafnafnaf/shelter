@@ -20,13 +20,25 @@ class VaccinationInline(admin.TabularInline):
     readonly_fields = []
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
+    def export_selected_to_excel(modeladmin, request, queryset):
+        """Export selected animals to Excel"""
+        return generate_animals_excel(queryset)
+    export_selected_to_excel.short_description = "Εξαγωγή επιλεγμένων σε Excel" 
+    def export_all_to_excel(modeladmin, request, queryset):
+        """Export all animals to Excel"""
+        from animals.models import Animal
+        all_animals = Animal.objects.all()
+        return generate_animals_excel(all_animals)
+    export_all_to_excel.short_description = "Εξαγωγή όλων σε Excel"
+    
+    
+    
     
     def get_actions(self, request):
         actions = super().get_actions(request)
         if 'delete_selected' in actions:
             actions['delete_selected'][0].short_description = "Διαγραφή επιλεγμένων"
         return actions
-    actions = [export_selected_to_excel, export_all_to_excel]
     
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status']
@@ -61,8 +73,8 @@ class AnimalAdmin(admin.ModelAdmin):
         }),
     )
     
-    actions = ['regenerate_qr_codes', 'make_public', 'make_private']
-    
+    actions = [export_selected_to_excel, export_all_to_excel, 'regenerate_qr_codes', 'make_public', 'make_private']
+ 
     def get_readonly_fields(self, request, obj=None):
         """
         Make chip_id readonly when editing existing animal to prevent
