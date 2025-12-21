@@ -78,7 +78,7 @@ class AnimalAdmin(admin.ModelAdmin):
             )
         return format_html('<span style="color: #999;">📷 No photo</span>')
     
-    photo_display.short_description = 'Photo'
+    photo_display.short_description = 'Φωτογραφία'
     
     def changelist_view(self, request, extra_context=None):
         """Override to add statistics to the changelist page"""
