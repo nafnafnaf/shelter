@@ -200,20 +200,20 @@ class AnimalAdmin(admin.ModelAdmin):
             count += 1
         
         self.message_user(request, f'Successfully regenerated QR codes for {count} animals.')
-    regenerate_qr_codes.short_description = 'Regenerate QR codes for selected animals'
-    
+    regenerate_qr_codes.short_description = 'Αναδημιουργία QR codes για επιλεγμένα ζώα'
+ 
     def make_public(self, request, queryset):
         """Admin action to make animals publicly visible"""
         count = queryset.update(public_visibility=True)
         self.message_user(request, f'Successfully made {count} animals publicly visible.')
-    make_public.short_description = 'Make selected animals publicly visible'
-    
+    make_public.short_description = 'Δημόσια προβολή επιλεγμένων ζώων'
+ 
     def make_private(self, request, queryset):
         """Admin action to make animals private"""
         count = queryset.update(public_visibility=False)
         self.message_user(request, f'Successfully made {count} animals private.')
-    make_private.short_description = 'Make selected animals private'
-    
+    make_private.short_description = 'Απόκρυψη επιλεγμένων ζώων από το κοινό'
+ 
     #class Media:
      #   js = ('admin/js/qr_admin.js',)
 
