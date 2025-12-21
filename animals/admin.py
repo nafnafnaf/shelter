@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from .export_utils import generate_animals_excel
 from django.urls import reverse
 from .models import Animal, MedicalRecord, AnimalPhoto, Vaccination
+from .utils import get_git_version  
 
 class MedicalRecordInline(admin.TabularInline):
     model = MedicalRecord
