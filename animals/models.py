@@ -129,14 +129,13 @@ class Animal(models.Model):
         from django.db import connection
     
     # Get tenant domain
-    domain = "localhost:8000"  # fallback
-    if hasattr(connection, 'tenant') and connection.tenant:
+        domain = "localhost:8000"  # fallback
+        if hasattr(connection, 'tenant') and connection.tenant:
         # Get the domain from tenant
         domain_obj = connection.tenant.get_primary_domain()
         if domain_obj:
-            domain = domain_obj.domain
-    
-    return {
+            domain = domain_obj.domain 
+        return {
         "type": "animal_profile",
         "animal_id": self.pk,
         "chip_id": self.chip_id,
