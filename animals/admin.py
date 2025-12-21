@@ -268,6 +268,28 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
 
 
 # Customize admin site header and title
-admin.site.site_header = "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
+
+# Dynamically set admin header with tenant name
+from django.contrib.admin import site
+from django.db import connection
+
+def get_admin_header(request):
+    """Get admin header with tenant name"""
+    if hasattr(connection, 'tenant') and connection.tenant:
+        return f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name}"
+    return "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
+
+# Monkey patch the AdminSite to use dynamic header
+_original_each_context = site.each_context
+
+def custom_each_context(request):
+    context = _original_each_context(request)
+    if hasattr(connection, 'tenant') and connection.tenant:
+        context['site_header'] = f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name}"
+    return context
+
+site.each_context = custom_each_context
+
+# Static defaults (overridden by dynamic header above)
 admin.site.site_title = "Καταφύγιο Ζώων"
 admin.site.index_title = "Διαχείριση Ζώων"
