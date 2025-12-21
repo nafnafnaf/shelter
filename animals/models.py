@@ -127,26 +127,27 @@ class Animal(models.Model):
     def get_qr_data(self):
         """Generate QR code data with tenant domain"""
         from django.db import connection
-    
-    # Get tenant domain
+        
+        # Get tenant domain
         domain = "localhost:8000"  # fallback
         if hasattr(connection, 'tenant') and connection.tenant:
-        # Get the domain from tenant
-        domain_obj = connection.tenant.get_primary_domain()
-        if domain_obj:
-            domain = domain_obj.domain 
+            # Get the domain from tenant
+            domain_obj = connection.tenant.get_primary_domain()
+            if domain_obj:
+                domain = domain_obj.domain
+        
         return {
-        "type": "animal_profile",
-        "animal_id": self.pk,
-        "chip_id": self.chip_id,
-        "name": self.name,
-        "species": self.get_species_display(),
-        "gender": self.get_gender_display(),
-        "cage": self.cage_number,
-        "entry_date": self.entry_date.isoformat(),
-        "url": f"https://{domain}/adopt/{self.pk}",
-        "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
-    } 
+            "type": "animal_profile",
+            "animal_id": self.pk,
+            "chip_id": self.chip_id,
+            "name": self.name,
+            "species": self.get_species_display(),
+            "gender": self.get_gender_display(),
+            "cage": self.cage_number,
+            "entry_date": self.entry_date.isoformat(),
+            "url": f"https://{domain}/adopt/{self.pk}",
+            "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
+        } 
     
     def generate_qr_code(self):
         """Generate QR code containing animal information"""
