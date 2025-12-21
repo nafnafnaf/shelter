@@ -134,7 +134,7 @@ class Animal(models.Model):
             # Use schema_name to find domain
             schema_name = connection.tenant.schema_name
             from shelter.models import Client, Domain
-            tenant_obj = Client.objects.filter(schema_name=schema_name).first()
+            tenant_obj = Shelter.objects.filter(schema_name=schema_name).first() 
             if tenant_obj:
                 domain_obj = Domain.objects.filter(tenant=tenant_obj).first()
                 if domain_obj:
