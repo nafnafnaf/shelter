@@ -314,3 +314,6 @@ class Vaccination(models.Model):
         if self.vaccine_name == 'other' and self.other_vaccine_name:
             return self.other_vaccine_name
         return self.get_vaccine_name_display()
+# Force verbose_name_plural (workaround for caching issue)
+Animal._meta.verbose_name_plural = "Ζώα"
+MedicalRecord._meta.verbose_name_plural = "Ιατρικά Αρχεία"
