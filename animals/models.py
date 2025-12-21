@@ -68,10 +68,12 @@ class Animal(models.Model):
     
     # Age - either numeric age OR category
     age_numeric = models.PositiveIntegerField(
+        verbose_name='Ηλικία (αριθμός)',
         null=True, blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(99)]
     )
     age_category = models.CharField(
+        verbose_name='Κατηγορία Ηλικίας',
         max_length=15, 
         choices=AGE_CATEGORY_CHOICES,
         null=True, blank=True
@@ -86,7 +88,7 @@ class Animal(models.Model):
     sterilization_status = models.CharField(max_length=15, choices=STERILIZATION_CHOICES, verbose_name='Κατάσταση Στείρωσης')
     
     # Location and Housing
-    cage_number = models.PositiveIntegerField(
+    cage_number = models.PositiveIntegerField(verbose_name='Αριθμός Κλουβιού', 
         validators=[MinValueValidator(1), MaxValueValidator(20)]
     )
     
