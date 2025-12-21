@@ -11,28 +11,31 @@ class MedicalRecordInline(admin.TabularInline):
 class AnimalPhotoInline(admin.TabularInline):
     model = AnimalPhoto
     extra = 1
-    fields = ['image', 'is_primary', 'caption']  # Only show these fields
-    readonly_fields = []  # uploaded_by and uploaded_at handled automatically
+    fields = ['image', 'is_primary', 'caption']
+    readonly_fields = []
+
 class VaccinationInline(admin.TabularInline):
     model = Vaccination
     extra = 1
     fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'batch_number', 'notes']
     readonly_fields = []
+
+# Admin actions for Excel export
+def export_selected_to_excel(modeladmin, request, queryset):
+    """Export selected animals to Excel"""
+    return generate_animals_excel(queryset)
+export_selected_to_excel.short_description = "Εξαγωγή επιλεγμένων σε Excel"
+
+def export_all_to_excel(modeladmin, request, queryset):
+    """Export all animals to Excel"""
+    from animals.models import Animal
+    all_animals = Animal.objects.all()
+    return generate_animals_excel(all_animals)
+export_all_to_excel.short_description = "Εξαγωγή όλων σε Excel"
+
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    def export_selected_to_excel(modeladmin, request, queryset):
-        """Export selected animals to Excel"""
-        return generate_animals_excel(queryset)
-    export_selected_to_excel.short_description = "Εξαγωγή επιλεγμένων σε Excel" 
-    def export_all_to_excel(modeladmin, request, queryset):
-        """Export all animals to Excel"""
-        from animals.models import Animal
-        all_animals = Animal.objects.all()
-        return generate_animals_excel(all_animals)
-    export_all_to_excel.short_description = "Εξαγωγή όλων σε Excel"
-    
-    
-    
+    actions = [export_selected_to_excel, export_all_to_excel, 'regenerate_qr_codes', 'make_public', 'make_private']
     
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -73,8 +76,6 @@ class AnimalAdmin(admin.ModelAdmin):
         }),
     )
     
-    actions = [export_selected_to_excel, export_all_to_excel, 'regenerate_qr_codes', 'make_public', 'make_private']
- 
     def get_readonly_fields(self, request, obj=None):
         """
         Make chip_id readonly when editing existing animal to prevent
@@ -82,13 +83,12 @@ class AnimalAdmin(admin.ModelAdmin):
         when creating new animals.
         """
         readonly = list(self.readonly_fields)
-        if obj:  # Editing existing animal (obj exists)
+        if obj:
             readonly.append('chip_id')
         return readonly
     
     def photo_display(self, obj):
         """Display animal's primary photo or first available photo as thumbnail"""
-        # Try to get primary photo first, otherwise get first photo
         photo = obj.photos.filter(is_primary=True).first() or obj.photos.first()
         
         if photo and photo.image:
@@ -167,7 +167,7 @@ class AnimalAdmin(admin.ModelAdmin):
     qr_code_preview.short_description = 'QR Code Preview'
     
     def save_model(self, request, obj, form, change):
-        if not change:  # Only set created_by on creation
+        if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
     
@@ -180,7 +180,6 @@ class AnimalAdmin(admin.ModelAdmin):
         for obj in formset.deleted_objects:
             obj.delete()
         for instance in instances:
-            # Set the uploaded_by/created_by for new instances
             if not instance.pk:
                 if hasattr(instance, 'uploaded_by'):
                     instance.uploaded_by = request.user
@@ -201,22 +200,18 @@ class AnimalAdmin(admin.ModelAdmin):
         
         self.message_user(request, f'Successfully regenerated QR codes for {count} animals.')
     regenerate_qr_codes.short_description = 'Αναδημιουργία QR codes για επιλεγμένα ζώα'
- 
+    
     def make_public(self, request, queryset):
         """Admin action to make animals publicly visible"""
         count = queryset.update(public_visibility=True)
         self.message_user(request, f'Successfully made {count} animals publicly visible.')
     make_public.short_description = 'Δημόσια προβολή επιλεγμένων ζώων'
- 
+    
     def make_private(self, request, queryset):
         """Admin action to make animals private"""
         count = queryset.update(public_visibility=False)
         self.message_user(request, f'Successfully made {count} animals private.')
     make_private.short_description = 'Απόκρυψη επιλεγμένων ζώων από το κοινό'
- 
-    #class Media:
-     #   js = ('admin/js/qr_admin.js',)
-
 
 
 @admin.register(MedicalRecord)
@@ -229,7 +224,6 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         from django_tenants.utils import schema_context
         from django.db import connection
-        # Force the correct schema
         with schema_context(connection.tenant.schema_name):
             return super().changelist_view(request, extra_context=extra_context)
     
@@ -237,8 +231,6 @@ class MedicalRecordAdmin(admin.ModelAdmin):
         if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
-
-
 
 
 @admin.register(Vaccination)
@@ -258,6 +250,7 @@ class VaccinationAdmin(admin.ModelAdmin):
         if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
 
 @admin.register(AnimalPhoto)
 class AnimalPhotoAdmin(admin.ModelAdmin):
@@ -287,10 +280,7 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-
 # Customize admin site header and title
-
-# Dynamically set admin header with tenant name
 from django.contrib.admin import site
 from django.db import connection
 
@@ -311,7 +301,7 @@ def custom_each_context(request):
 
 site.each_context = custom_each_context
 
-# Static defaults (overridden by dynamic header above)
+# Static defaults
 admin.site.site_title = "Καταφύγιο Ζώων"
 admin.site.index_title = "Διαχείριση Ζώων"
 
