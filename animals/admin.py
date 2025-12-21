@@ -229,6 +229,7 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         from django_tenants.utils import schema_context
         from django.db import connection
+from .utils import get_git_version
         # Force the correct schema
         with schema_context(connection.tenant.schema_name):
             return super().changelist_view(request, extra_context=extra_context)
@@ -251,6 +252,7 @@ class VaccinationAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         from django_tenants.utils import schema_context
         from django.db import connection
+from .utils import get_git_version
         with schema_context(connection.tenant.schema_name):
             return super().changelist_view(request, extra_context=extra_context)
     
@@ -269,6 +271,7 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         from django_tenants.utils import schema_context
         from django.db import connection
+from .utils import get_git_version
         with schema_context(connection.tenant.schema_name):
             return super().changelist_view(request, extra_context=extra_context)
     
@@ -293,6 +296,7 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
 # Dynamically set admin header with tenant name
 from django.contrib.admin import site
 from django.db import connection
+from .utils import get_git_version
 
 def get_admin_header(request):
     """Get admin header with tenant name"""
@@ -306,7 +310,7 @@ _original_each_context = site.each_context
 def custom_each_context(request):
     context = _original_each_context(request)
     if hasattr(connection, 'tenant') and connection.tenant:
-        context['site_header'] = f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name}"
+        context['site_header'] = f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name} <span style='font-size:0.7em; color:#999;'>{get_git_version()}</span>"
     return context
 
 site.each_context = custom_each_context
