@@ -20,7 +20,14 @@ class VaccinationInline(admin.TabularInline):
     readonly_fields = []
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    actions = ['export_selected_to_excel', 'export_all_to_excel']
+    
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            actions['delete_selected'][0].short_description = "Διαγραφή επιλεγμένων"
+        return actions
+    actions = [export_selected_to_excel, export_all_to_excel]
+    
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status']
     search_fields = ['name', 'chip_id', 'capture_location']
@@ -295,3 +302,7 @@ site.each_context = custom_each_context
 # Static defaults (overridden by dynamic header above)
 admin.site.site_title = "Καταφύγιο Ζώων"
 admin.site.index_title = "Διαχείριση Ζώων"
+
+# Translate default admin action
+from django.contrib import admin as django_admin
+django_admin.site.actions_list = []
