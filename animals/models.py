@@ -198,9 +198,9 @@ class MedicalRecord(models.Model):
     ]
     
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='medical_records')
-    record_type = models.CharField(max_length=15, choices=RECORD_TYPE_CHOICES)
-    description = models.TextField(max_length=300)
-    date_recorded = models.DateField()
+    record_type = models.CharField(max_length=15, choices=RECORD_TYPE_CHOICES, verbose_name='Τύπος Αρχείου')
+    description = models.TextField(max_length=300, verbose_name='Περιγραφή')
+    date_recorded = models.DateField(verbose_name='Ημερομηνία Καταγραφής')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Δημιουργήθηκε από')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Δημιουργήθηκε')
     
@@ -217,9 +217,9 @@ class AnimalPhoto(models.Model):
         verbose_name_plural = "Φωτογραφίες Ζώων"
         ordering = ["-is_primary", "-uploaded_at"]
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos')
-    image = models.ImageField(upload_to='animal_photos/')
-    is_primary = models.BooleanField(default=False)
-    caption = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to='animal_photos/', verbose_name='Εικόνα')
+    is_primary = models.BooleanField(default=False, verbose_name='Κύρια Φωτογραφία')
+    caption = models.CharField(max_length=100, blank=True, verbose_name='Λεζάντα')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     
