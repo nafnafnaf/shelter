@@ -133,7 +133,7 @@ class Animal(models.Model):
         if hasattr(connection, 'tenant') and connection.tenant:
             # Use schema_name to find domain
             schema_name = connection.tenant.schema_name
-            from shelter.models import Client, Domain
+            from shelter.models import Shelter, Domain
             tenant_obj = Shelter.objects.filter(schema_name=schema_name).first() 
             if tenant_obj:
                 domain_obj = Domain.objects.filter(tenant=tenant_obj).first()
