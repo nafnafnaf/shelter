@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from .export_utils import generate_animals_excel
 from django.urls import reverse
 from .models import Animal, MedicalRecord, AnimalPhoto, Vaccination
 
@@ -19,6 +20,7 @@ class VaccinationInline(admin.TabularInline):
     readonly_fields = []
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
+    actions = ['export_selected_to_excel', 'export_all_to_excel']
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status']
     search_fields = ['name', 'chip_id', 'capture_location']
