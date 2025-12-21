@@ -8,6 +8,10 @@ from django.conf import settings
 import json
 
 class Animal(models.Model):
+    class Meta:
+        verbose_name = "Ζώο"
+        verbose_name_plural = "Ζώα"
+        ordering = ["name"]
     SPECIES_CHOICES = [
         ('dog', 'Σκύλος'),
         ('cat', 'Γάτα'),
@@ -184,6 +188,10 @@ class Animal(models.Model):
 
 
 class MedicalRecord(models.Model):
+    class Meta:
+        verbose_name = "Ιατρικό Αρχείο"
+        verbose_name_plural = "Ιατρικά Αρχεία"
+        ordering = ["-date_recorded"]
     RECORD_TYPE_CHOICES = [
         ('pathology', 'Παθήσεις'),
         ('diagnosis', 'Διαγνώσεις'),
@@ -204,6 +212,10 @@ class MedicalRecord(models.Model):
 
 
 class AnimalPhoto(models.Model):
+    class Meta:
+        verbose_name = "Φωτογραφία Ζώου"
+        verbose_name_plural = "Φωτογραφίες Ζώων"
+        ordering = ["-is_primary", "-uploaded_at"]
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='animal_photos/')
     is_primary = models.BooleanField(default=False)
@@ -219,6 +231,10 @@ class AnimalPhoto(models.Model):
 
 
 class Vaccination(models.Model):
+    class Meta:
+        verbose_name = "Εμβολιασμός"
+        verbose_name_plural = "Εμβολιασμοί"
+        ordering = ["-date_administered"]
     """Καταγραφή εμβολιασμών ζώων"""
     VACCINE_CHOICES = [
         ('rabies', 'Λύσσα'),

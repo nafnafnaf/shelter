@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'el-gr'
+LANGUAGE_CODE = 'el'
 TIME_ZONE = 'Europe/Athens'
 USE_I18N = True
 USE_TZ = True
