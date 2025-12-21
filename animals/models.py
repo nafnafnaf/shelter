@@ -319,3 +319,7 @@ class Vaccination(models.Model):
 # Force verbose_name_plural (workaround for caching issue)
 Animal._meta.verbose_name_plural = "Ζώα"
 MedicalRecord._meta.verbose_name_plural = "Ιατρικά Αρχεία"
+
+# Force verbose_name (singular) for add buttons
+Animal._meta.verbose_name = "Ζώο"
+MedicalRecord._meta.verbose_name = "Ιατρικό Αρχείο"
