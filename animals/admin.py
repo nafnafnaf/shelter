@@ -196,6 +196,8 @@ class AnimalAdmin(admin.ModelAdmin):
     #class Media:
      #   js = ('admin/js/qr_admin.js',)
 
+
+
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ['animal', 'record_type', 'date_recorded', 'created_by']
@@ -215,6 +217,26 @@ class MedicalRecordAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
+
+
+
+@admin.register(Vaccination)
+class VaccinationAdmin(admin.ModelAdmin):
+    list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
+    list_filter = ['vaccine_name', 'date_administered']
+    search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
+    readonly_fields = ['created_by', 'created_at']
+    
+    def changelist_view(self, request, extra_context=None):
+        from django_tenants.utils import schema_context
+        from django.db import connection
+        with schema_context(connection.tenant.schema_name):
+            return super().changelist_view(request, extra_context=extra_context)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
 @admin.register(AnimalPhoto)
 class AnimalPhotoAdmin(admin.ModelAdmin):
@@ -244,20 +266,3 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(Vaccination)
-class VaccinationAdmin(admin.ModelAdmin):
-    list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
-    list_filter = ['vaccine_name', 'date_administered']
-    search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
-    readonly_fields = ['created_by', 'created_at']
-    
-    def changelist_view(self, request, extra_context=None):
-        from django_tenants.utils import schema_context
-        from django.db import connection
-        with schema_context(connection.tenant.schema_name):
-            return super().changelist_view(request, extra_context=extra_context)
-    
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
