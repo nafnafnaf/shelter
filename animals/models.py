@@ -223,9 +223,6 @@ class AnimalPhoto(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     
-    class Meta:
-        ordering = ['-is_primary', '-uploaded_at']
-    
     def __str__(self):
         return f"Photo of {self.animal.name}"
 
