@@ -63,8 +63,8 @@ class Animal(models.Model):
         unique=True,
         validators=[RegexValidator(r'^\d{15}$', 'Chip ID must be exactly 15 digits')]
     )
-    species = models.CharField(max_length=10, choices=SPECIES_CHOICES)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    species = models.CharField(max_length=10, choices=SPECIES_CHOICES, verbose_name='Είδος')
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, verbose_name='Φύλο')
     
     # Age - either numeric age OR category
     age_numeric = models.PositiveIntegerField(
@@ -77,13 +77,13 @@ class Animal(models.Model):
         null=True, blank=True
     )
     
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, verbose_name='Όνομα')
     
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
-    behavior = models.CharField(max_length=25, choices=BEHAVIOR_CHOICES)
-    vaccination_status = models.CharField(max_length=15, choices=VACCINATION_CHOICES)
-    sterilization_status = models.CharField(max_length=15, choices=STERILIZATION_CHOICES)
+    behavior = models.CharField(max_length=25, choices=BEHAVIOR_CHOICES, verbose_name='Συμπεριφορά')
+    vaccination_status = models.CharField(max_length=15, choices=VACCINATION_CHOICES, verbose_name='Κατάσταση Εμβολιασμού')
+    sterilization_status = models.CharField(max_length=15, choices=STERILIZATION_CHOICES, verbose_name='Κατάσταση Στείρωσης')
     
     # Location and Housing
     cage_number = models.PositiveIntegerField(
@@ -92,21 +92,21 @@ class Animal(models.Model):
     
     # Dates and Location
     entry_date = models.DateTimeField(auto_now_add=True)
-    capture_location = models.CharField(max_length=100)
-    capture_date = models.DateField()
+    capture_location = models.CharField(max_length=100, verbose_name='Τοποθεσία Εύρεσης')
+    capture_date = models.DateField(verbose_name='Ημερομηνία Εύρεσης')
     
     # Contact and Adoption
     finder_contact = models.TextField(blank=True, verbose_name='Στοιχεία του ευρέτη')
     public_visibility = models.BooleanField(default=False, verbose_name='Δημόσια προβολή')
-    adoption_status = models.CharField(max_length=20, choices=ADOPTION_STATUS_CHOICES, default='available')
+    adoption_status = models.CharField(max_length=20, choices=ADOPTION_STATUS_CHOICES, default='available', verbose_name='Κατάσταση Υιοθεσίας')
     
     # QR Code
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True, verbose_name='QR Code')
     
     # Metadata
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Δημιουργήθηκε από')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Δημιουργήθηκε')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Ενημερώθηκε')
     
     class Meta:
         ordering = ['-created_at']
@@ -201,8 +201,8 @@ class MedicalRecord(models.Model):
     record_type = models.CharField(max_length=15, choices=RECORD_TYPE_CHOICES)
     description = models.TextField(max_length=300)
     date_recorded = models.DateField()
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Δημιουργήθηκε από')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Δημιουργήθηκε')
     
     class Meta:
         ordering = ['-date_recorded']
