@@ -266,3 +266,8 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+
+# Customize admin site header and title
+admin.site.site_header = "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
+admin.site.site_title = "Καταφύγιο Ζώων"
+admin.site.index_title = "Διαχείριση Ζώων"
