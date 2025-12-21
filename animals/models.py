@@ -125,24 +125,29 @@ class Animal(models.Model):
             raise ValidationError('Either numeric age or age category must be provided.')
     
     def get_qr_data(self):
-        """Generate structured data for QR code"""
-        try:
-            from django.contrib.sites.models import Site
-            current_site = Site.objects.get_current()
-            base_url = f"https://{current_site.domain}"
-        except:
-            base_url = "http://localhost:8000"
-        
-        return {
-            "chip_id": self.chip_id,
-            "name": self.name,
-            "api_url": f"{base_url}/api/v1/animals/{self.id}/",
-            "public_url": f"{base_url}/adopt/{self.id}/",
-            "species": self.get_species_display(),
-            "gender": self.get_gender_display(),
-            "cage": self.cage_number,
-            "entry_date": self.entry_date.isoformat(),
-        }
+        """Generate QR code data with tenant domain"""
+        from django.db import connection
+    
+    # Get tenant domain
+    domain = "localhost:8000"  # fallback
+    if hasattr(connection, 'tenant') and connection.tenant:
+        # Get the domain from tenant
+        domain_obj = connection.tenant.get_primary_domain()
+        if domain_obj:
+            domain = domain_obj.domain
+    
+    return {
+        "type": "animal_profile",
+        "animal_id": self.pk,
+        "chip_id": self.chip_id,
+        "name": self.name,
+        "species": self.get_species_display(),
+        "gender": self.get_gender_display(),
+        "cage": self.cage_number,
+        "entry_date": self.entry_date.isoformat(),
+        "url": f"https://{domain}/adopt/{self.pk}",
+        "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
+    } 
     
     def generate_qr_code(self):
         """Generate QR code containing animal information"""
