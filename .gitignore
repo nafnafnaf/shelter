@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media and Static (don't commit these)
+/media
+/staticfiles
+/static
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups and temporary files
+*.bak
+*.DELETE
+*.broken
+
+# Docker
+docker-compose.override.yml
+
+# Test files
+test_*.py
