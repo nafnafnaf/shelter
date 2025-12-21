@@ -114,7 +114,7 @@ class AnimalAdmin(admin.ModelAdmin):
         elif obj.age_category:
             return obj.get_age_category_display()
         return "Μη καθορισμένη"
-    age_display.short_description = 'Age'
+    age_display.short_description = 'Ηλικία'
     
     def qr_code_display(self, obj):
         if obj.qr_code:
