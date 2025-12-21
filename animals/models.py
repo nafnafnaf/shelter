@@ -131,8 +131,9 @@ class Animal(models.Model):
         # Get tenant domain
         domain = "localhost:8000"  # fallback
         if hasattr(connection, 'tenant') and connection.tenant:
-            # Get the domain from tenant
-            domain_obj = connection.tenant.get_primary_domain()
+            # Query Domain model for this tenant
+            from shelter.models import Domain
+            domain_obj = Domain.objects.filter(tenant=connection.tenant).first()
             if domain_obj:
                 domain = domain_obj.domain
         
