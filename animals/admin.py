@@ -258,7 +258,7 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
                 obj.image.url
             )
         return "No image"
-    image_preview.short_description = 'Preview'
+    image_preview.short_description = 'Προεπισκόπηση'
     
     def save_model(self, request, obj, form, change):
         if not change:
