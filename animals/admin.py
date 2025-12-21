@@ -26,27 +26,27 @@ class AnimalAdmin(admin.ModelAdmin):
     readonly_fields = ['created_by', 'created_at', 'updated_at', 'entry_date', 'qr_code_preview']
     
     fieldsets = (
-        ('Basic Information', {
+        ('Βασικές Πληροφορίες', {
             'fields': ('chip_id', 'name', 'species', 'gender')
         }),
-        ('Age Information', {
+        ('Πληροφορίες Ηλικίας', {
             'fields': ('age_numeric', 'age_category'),
-            'description': 'Provide either numeric age OR age category, not both.'
+            'description': 'Παρέχετε είτε αριθμητική ηλικία ΕΊΤΕ κατηγορία ηλικίας, όχι και τα δύο.'
         }),
-        ('Health & Behavior', {
+        ('Υγεία & Συμπεριφορά', {
             'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status')
         }),
-        ('Location & Housing', {
+        ('Τοποθεσία & Στέγαση', {
             'fields': ('cage_number', 'capture_location', 'capture_date')
         }),
-        ('Contact & Adoption', {
+        ('Επικοινωνία & Υιοθεσία', {
             'fields': ('finder_contact', 'adoption_status', 'public_visibility')
         }),
         ('QR Code', {
             'fields': ('qr_code', 'qr_code_preview'),
             'classes': ('collapse',)
         }),
-        ('Metadata', {
+        ('Μεταδεδομένα', {
             'fields': ('created_by', 'created_at', 'updated_at', 'entry_date'),
             'classes': ('collapse',)
         }),
