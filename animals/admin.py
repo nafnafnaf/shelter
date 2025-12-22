@@ -263,8 +263,12 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
 
 
 # Customize admin site header and title
+# Customize admin site header and title
 from django.contrib import admin as admin_module
+from .version import get_version
 
-admin_module.site.site_header = "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
+VERSION = get_version()
+
+admin_module.site.site_header = f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {VERSION}"
 admin_module.site.site_title = "Καταφύγιο Ζώων"
 admin_module.site.index_title = "Διαχείριση Ζώων"

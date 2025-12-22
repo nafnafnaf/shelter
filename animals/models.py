@@ -44,6 +44,7 @@ class Animal(models.Model):
         ('yes', 'Ναι'),
         ('no', 'Όχι'),
         ('scheduled', 'Προγραμματισμένο'),
+        ('unknown', 'Άγνωστη'),
     ]
     
     ADOPTION_STATUS_CHOICES = [
@@ -66,7 +67,7 @@ class Animal(models.Model):
     age_numeric = models.PositiveIntegerField(
         verbose_name='Ηλικία (αριθμός)',
         null=True, blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(99)]
+        validators=[MinValueValidator(0), MaxValueValidator(30)]
     )
     age_category = models.CharField(
         verbose_name='Κατηγορία Ηλικίας',
