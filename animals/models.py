@@ -8,10 +8,6 @@ from django.conf import settings
 import json
 
 class Animal(models.Model):
-    class Meta:
-        verbose_name = "Ζώο"
-        verbose_name_plural = "Ζώα"
-        ordering = ["name"]
     SPECIES_CHOICES = [
         ('dog', 'Σκύλος'),
         ('cat', 'Γάτα'),
@@ -36,12 +32,12 @@ class Animal(models.Model):
     ]
     
     VACCINATION_CHOICES = [
-        ('ΕΜΒΟΛΙΟ_1', 'Εμβόλιο 1'),
-        ('ΕΜΒΟΛΙΟ_2', 'Εμβόλιο 2'),
-        ('ΕΜΒΟΛΙΟ_3', 'Εμβόλιο 3'),
-        ('ΕΜΒΟΛΙΟ_4', 'Εμβόλιο 4'),
-        ('ΕΜΒΟΛΙΟ_5', 'Εμβόλιο 5'),
-        ('ΕΜΒΟΛΙΟ_6', 'Εμβόλιο 6'),
+        ('ΕΜΒΟΛΙΟ_1', 'DHPP'),
+        ('ΕΜΒΟΛΙΟ_2', 'DHPPI'),
+        ('ΕΜΒΟΛΙΟ_3', 'Carre (Distemper)'),
+        ('ΕΜΒΟΛΙΟ_4', 'Adenovirus τύπου 1'),
+        ('ΕΜΒΟΛΙΟ_5', 'Parvovirus'),
+        ('ΕΜΒΟΛΙΟ_6', 'Parainfluenza'),
     ]
     
     STERILIZATION_CHOICES = [
@@ -81,6 +77,13 @@ class Animal(models.Model):
     
     name = models.CharField(max_length=20, verbose_name='Όνομα')
     
+    # Shelter field
+    shelter = models.CharField(
+        max_length=100,
+        default='Καταφύγιο Δήμου ...mplampla',
+        verbose_name='Καταφύγιο'
+    )
+    
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
     behavior = models.CharField(max_length=25, choices=BEHAVIOR_CHOICES, verbose_name='Συμπεριφορά')
@@ -112,6 +115,8 @@ class Animal(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+        verbose_name = "Ζώο"
+        verbose_name_plural = "Ζώα"
     
     def __str__(self):
         return f"{self.name} ({self.chip_id})"
@@ -125,32 +130,23 @@ class Animal(models.Model):
             raise ValidationError('Either numeric age or age category must be provided.')
     
     def get_qr_data(self):
-        """Generate QR code data with tenant domain"""
-        from django.db import connection
-    
-    # Get tenant domain
-        domain = "localhost:8000"  # fallback
-        if hasattr(connection, 'tenant') and connection.tenant:
-            # Use schema_name to find domain
-            schema_name = connection.tenant.schema_name
-            from shelter.models import Shelter, Domain
-            tenant_obj = Shelter.objects.filter(schema_name=schema_name).first() 
-            if tenant_obj:
-                domain_obj = Domain.objects.filter(tenant=tenant_obj).first()
-                if domain_obj:
-                    domain = domain_obj.domain
+        """Generate QR code data with simple domain"""
+        # Use the configured domain from settings or default
+        domain = "shelter.nafnaf.gr"
+        
         return {
-        "type": "animal_profile",
-        "animal_id": self.pk,
-        "chip_id": self.chip_id,
-        "name": self.name,
-        "species": self.get_species_display(),
-        "gender": self.get_gender_display(),
-        "cage": self.cage_number,
-        "entry_date": self.entry_date.isoformat(),
-        "url": f"https://{domain}/adopt/{self.pk}",
-        "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
-    } 
+            "type": "animal_profile",
+            "animal_id": self.pk,
+            "chip_id": self.chip_id,
+            "name": self.name,
+            "species": self.get_species_display(),
+            "gender": self.get_gender_display(),
+            "cage": self.cage_number,
+            "shelter": self.shelter,
+            "entry_date": self.entry_date.isoformat(),
+            "url": f"https://{domain}/adopt/{self.pk}",
+            "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
+        }
     
     def generate_qr_code(self):
         """Generate QR code containing animal information"""
@@ -198,10 +194,6 @@ class Animal(models.Model):
 
 
 class MedicalRecord(models.Model):
-    class Meta:
-        verbose_name = "Ιατρικό Αρχείο"
-        verbose_name_plural = "Ιατρικά Αρχεία"
-        ordering = ["-date_recorded"]
     RECORD_TYPE_CHOICES = [
         ('pathology', 'Παθήσεις'),
         ('diagnosis', 'Διαγνώσεις'),
@@ -216,16 +208,14 @@ class MedicalRecord(models.Model):
     
     class Meta:
         ordering = ['-date_recorded']
+        verbose_name = "Ιατρικό Αρχείο"
+        verbose_name_plural = "Ιατρικά Αρχεία"
     
     def __str__(self):
         return f"{self.animal.name} - {self.get_record_type_display()}"
 
 
 class AnimalPhoto(models.Model):
-    class Meta:
-        verbose_name = "Φωτογραφία Ζώου"
-        verbose_name_plural = "Φωτογραφίες Ζώων"
-        ordering = ["-is_primary", "-uploaded_at"]
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos', verbose_name='Ζώο')
     image = models.ImageField(upload_to='animal_photos/', verbose_name='Εικόνα')
     is_primary = models.BooleanField(default=False, verbose_name='Κύρια Φωτογραφία')
@@ -233,15 +223,16 @@ class AnimalPhoto(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name='Ανέβηκε στις')
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Ανέβηκε από')
     
+    class Meta:
+        ordering = ["-is_primary", "-uploaded_at"]
+        verbose_name = "Φωτογραφία Ζώου"
+        verbose_name_plural = "Φωτογραφίες Ζώων"
+    
     def __str__(self):
         return f"Photo of {self.animal.name}"
 
 
 class Vaccination(models.Model):
-    class Meta:
-        verbose_name = "Εμβολιασμός"
-        verbose_name_plural = "Εμβολιασμοί"
-        ordering = ["-date_administered"]
     """Καταγραφή εμβολιασμών ζώων"""
     VACCINE_CHOICES = [
         ('rabies', 'Λύσσα'),
@@ -324,6 +315,7 @@ class Vaccination(models.Model):
         if self.vaccine_name == 'other' and self.other_vaccine_name:
             return self.other_vaccine_name
         return self.get_vaccine_name_display()
+
 # Force verbose_name_plural (workaround for caching issue)
 Animal._meta.verbose_name_plural = "Ζώα"
 MedicalRecord._meta.verbose_name_plural = "Ιατρικά Αρχεία"

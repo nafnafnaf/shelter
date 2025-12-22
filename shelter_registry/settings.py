@@ -8,6 +8,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production'
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']  # Configure appropriately for production
+
 # CSRF Trusted Origins - Required for Django 4.0+ with HTTPS/Cloudflare
 CSRF_TRUSTED_ORIGINS = [
     'https://shelter.nafnaf.gr',
@@ -22,9 +23,9 @@ CSRF_COOKIE_HTTPONLY = False  # Must be False for CSRF to work
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
+
 # Application definition
-SHARED_APPS = [
-    'django_tenants',
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,25 +35,10 @@ SHARED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'shelter',  # Our main app
+    'animals',
 ]
-
-TENANT_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'animals',  # Tenant-specific animal data
-]
-
-INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
-
-TENANT_MODEL = "shelter.Shelter"
-TENANT_DOMAIN_MODEL = "shelter.Domain"
 
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -64,7 +50,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'shelter_registry.urls'
-PUBLIC_SCHEMA_URLCONF = 'shelter_registry.urls_public'
 
 TEMPLATES = [
     {
@@ -87,7 +72,7 @@ WSGI_APPLICATION = 'shelter_registry.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django_tenants.postgresql_backend',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME', 'shelter_registry'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
@@ -95,10 +80,6 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
-
-DATABASE_ROUTERS = (
-    'django_tenants.routers.TenantSyncRouter',
-)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

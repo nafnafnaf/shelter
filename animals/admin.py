@@ -44,14 +44,14 @@ class AnimalAdmin(admin.ModelAdmin):
         return actions
     
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
-    list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status']
-    search_fields = ['name', 'chip_id', 'capture_location']
+    list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status', 'shelter']
+    search_fields = ['name', 'chip_id', 'capture_location', 'shelter']
     inlines = [MedicalRecordInline, AnimalPhotoInline, VaccinationInline]
     readonly_fields = ['created_by', 'created_at', 'updated_at', 'entry_date', 'qr_code_preview']
     
     fieldsets = (
         ('Βασικές Πληροφορίες', {
-            'fields': ('chip_id', 'name', 'species', 'gender')
+            'fields': ('chip_id', 'name', 'species', 'gender', 'shelter')
         }),
         ('Πληροφορίες Ηλικίας', {
             'fields': ('age_numeric', 'age_category'),
@@ -221,12 +221,6 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     search_fields = ['animal__name', 'animal__chip_id', 'description']
     readonly_fields = ['created_by', 'created_at']
     
-    def changelist_view(self, request, extra_context=None):
-        from django_tenants.utils import schema_context
-        from django.db import connection
-        with schema_context(connection.tenant.schema_name):
-            return super().changelist_view(request, extra_context=extra_context)
-    
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
@@ -240,12 +234,6 @@ class VaccinationAdmin(admin.ModelAdmin):
     search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
     readonly_fields = ['created_by', 'created_at']
     
-    def changelist_view(self, request, extra_context=None):
-        from django_tenants.utils import schema_context
-        from django.db import connection
-        with schema_context(connection.tenant.schema_name):
-            return super().changelist_view(request, extra_context=extra_context)
-    
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
@@ -258,12 +246,6 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
     list_filter = ['is_primary', 'uploaded_at']
     search_fields = ['animal__name', 'animal__chip_id', 'caption']
     readonly_fields = ['uploaded_by', 'uploaded_at', 'image_preview']
-    
-    def changelist_view(self, request, extra_context=None):
-        from django_tenants.utils import schema_context
-        from django.db import connection
-        with schema_context(connection.tenant.schema_name):
-            return super().changelist_view(request, extra_context=extra_context)
     
     def image_preview(self, obj):
         if obj.image:
@@ -281,30 +263,8 @@ class AnimalPhotoAdmin(admin.ModelAdmin):
 
 
 # Customize admin site header and title
-from django.contrib.admin import site
-from django.db import connection
+from django.contrib import admin as admin_module
 
-def get_admin_header(request):
-    """Get admin header with tenant name"""
-    if hasattr(connection, 'tenant') and connection.tenant:
-        return f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name}"
-    return "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
-
-# Monkey patch the AdminSite to use dynamic header
-_original_each_context = site.each_context
-
-def custom_each_context(request):
-    context = _original_each_context(request)
-    if hasattr(connection, 'tenant') and connection.tenant:
-        context['site_header'] = f"Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων - {connection.tenant.name}"
-    return context
-
-site.each_context = custom_each_context
-
-# Static defaults
-admin.site.site_title = "Καταφύγιο Ζώων"
-admin.site.index_title = "Διαχείριση Ζώων"
-
-# Translate default admin action
-from django.contrib import admin as django_admin
-django_admin.site.actions_list = []
+admin_module.site.site_header = "Διαχείριση Συστήματος Καταγραφής και Παρακολούθησης Αδέσποτων"
+admin_module.site.site_title = "Καταφύγιο Ζώων"
+admin_module.site.index_title = "Διαχείριση Ζώων"
