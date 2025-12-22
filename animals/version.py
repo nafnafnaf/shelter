@@ -10,7 +10,7 @@ def get_version():
             cwd=os.path.dirname(os.path.abspath(__file__)),
             stderr=subprocess.DEVNULL
         ).decode('ascii').strip()
-        return f"v2.0 ({commit})"
+        return f"{commit}"
     except:
         # Fallback if git is not available
         return "v2.0"
