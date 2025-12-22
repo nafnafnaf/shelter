@@ -1,16 +1,15 @@
-import subprocess
-import os
+# Version is set at build time by reading git commit
+# Fallback if not available
+VERSION = "unknown"
+
+try:
+    import os
+    version_file = os.path.join(os.path.dirname(__file__), '.version')
+    if os.path.exists(version_file):
+        with open(version_file, 'r') as f:
+            VERSION = f.read().strip()
+except:
+    pass
 
 def get_version():
-    """Get the current git commit hash"""
-    try:
-        # Try to get git commit hash
-        commit = subprocess.check_output(
-            ['git', 'rev-parse', '--short', 'HEAD'],
-            cwd=os.path.dirname(os.path.abspath(__file__)),
-            stderr=subprocess.DEVNULL
-        ).decode('ascii').strip()
-        return f"{commit}"
-    except:
-        # Fallback if git is not available
-        return "v2.0"
+    return VERSION

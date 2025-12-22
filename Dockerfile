@@ -25,6 +25,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy project
 COPY . /app/
+RUN git rev-parse --short HEAD > /app/animals/.version 2>/dev/null || echo "v2.0" > /app/animals/.version
+
 
 # Create necessary directories
 RUN mkdir -p /app/staticfiles /app/media /app/logs
