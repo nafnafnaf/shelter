@@ -24,10 +24,7 @@ services:
     build: .
     container_name: shelter_web
     command: >
-      sh -c "python manage.py makemigrations shelter &&
-             python manage.py makemigrations animals &&
-             python manage.py migrate_schemas --shared &&
-             python manage.py migrate_schemas &&
+      sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 shelter_registry.wsgi:application"
     volumes:
