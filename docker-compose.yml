@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -23,12 +22,8 @@ services:
   web:
     build: .
     container_name: shelter_web
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 shelter_registry.wsgi:application"
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 shelter_registry.wsgi:application
     volumes:
-      - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     ports:
