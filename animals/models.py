@@ -8,6 +8,10 @@ from django.conf import settings
 import json
 import os
 
+def get_default_shelter_name():
+    """Get default shelter name from environment"""
+    return os.environ.get('ORGANIZATION_NAME', 'Καταφύγιο Εθελοντών Δήμου Καβάλας - Πολύστυλο')
+
 class Animal(models.Model):
     SPECIES_CHOICES = [
         ('dog', 'Σκύλος'),
@@ -80,10 +84,9 @@ class Animal(models.Model):
     name = models.CharField(max_length=20, verbose_name='Όνομα')
     
     # Shelter field
-    # Shelter field
     shelter = models.CharField(
         max_length=100,
-        default=os.environ.get('ORGANIZATION_NAME', 'Καταφύγιο Εθελοντών Δήμου Καβάλας - Πολύστυλο'),
+        default=get_default_shelter_name,  # Callable - no parentheses
         verbose_name='Καταφύγιο'
     )   
     
@@ -134,7 +137,6 @@ class Animal(models.Model):
     
     def get_qr_data(self):
         """Generate QR code data with configured domain"""
-        import os
         # Read domain from environment variable with fallback
         domain = os.environ.get('DOMAIN', 'shelter.nafnaf.gr')
     
