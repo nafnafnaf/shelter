@@ -6,6 +6,7 @@ from io import BytesIO
 from django.core.files import File
 from django.conf import settings
 import json
+import os
 
 class Animal(models.Model):
     SPECIES_CHOICES = [
@@ -79,11 +80,12 @@ class Animal(models.Model):
     name = models.CharField(max_length=20, verbose_name='Όνομα')
     
     # Shelter field
+    # Shelter field
     shelter = models.CharField(
         max_length=100,
-        default='Καταφύγιο Δήμου ...mplampla',
+        default=os.environ.get('ORGANIZATION_NAME', 'Καταφύγιο Εθελοντών Δήμου Καβάλας - Πολύστυλο'),
         verbose_name='Καταφύγιο'
-    )
+    )   
     
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
@@ -131,22 +133,23 @@ class Animal(models.Model):
             raise ValidationError('Either numeric age or age category must be provided.')
     
     def get_qr_data(self):
-        """Generate QR code data with simple domain"""
-        # Use the configured domain from settings or default
-        domain = "shelter.nafnaf.gr"
-        
+        """Generate QR code data with configured domain"""
+        import os
+        # Read domain from environment variable with fallback
+        domain = os.environ.get('DOMAIN', 'shelter.nafnaf.gr')
+    
         return {
-            "type": "animal_profile",
-            "animal_id": self.pk,
-            "chip_id": self.chip_id,
-            "name": self.name,
-            "species": self.get_species_display(),
-            "gender": self.get_gender_display(),
-            "cage": self.cage_number,
-            "shelter": self.shelter,
-            "entry_date": self.entry_date.isoformat(),
-            "url": f"https://{domain}/adopt/{self.pk}",
-            "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
+           "type": "animal_profile",
+          "animal_id": self.pk,
+          "chip_id": self.chip_id,
+          "name": self.name,
+          "species": self.get_species_display(),
+          "gender": self.get_gender_display(),
+          "cage": self.cage_number,
+          "shelter": self.shelter,
+          "entry_date": self.entry_date.isoformat(),
+          "url": f"https://{domain}/adopt/{self.pk}",
+          "api_url": f"https://{domain}/api/v1/animals/{self.pk}/"
         }
     
     def generate_qr_code(self):
