@@ -258,7 +258,7 @@ class AnimalPhoto(models.Model):
 
 class Vaccination(models.Model):
     """Καταγραφή εμβολιασμών ζώων"""
-    VACCINE_CHOICES = # Vaccines organized by species
+    # Vaccines organized by species
 
     # Combined list for the field (includes all + other)
     VACCINE_CHOICES = [
