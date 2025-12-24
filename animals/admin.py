@@ -18,8 +18,18 @@ class VaccinationInline(admin.TabularInline):
     model = Vaccination
     extra = 1
     fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'batch_number', 'notes']
-    readonly_fields = []
-
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Make date_administered readonly for existing records"""
+        if obj:  # If the parent Animal exists (not new)
+            # Check each inline vaccination - if it exists, make its date readonly
+            return ['date_administered']
+        return []
+    
+    def has_delete_permission(self, request, obj=None):
+        """Prevent deletion of vaccination records"""
+        return False
+    
 # Admin actions for Excel export
 def export_selected_to_excel(modeladmin, request, queryset):
     """Export selected animals to Excel"""
@@ -58,7 +68,7 @@ class AnimalAdmin(admin.ModelAdmin):
             'description': 'Παρέχετε είτε αριθμητική ηλικία ΕΊΤΕ κατηγορία ηλικίας, όχι και τα δύο.'
         }),
         ('Υγεία & Συμπεριφορά', {
-            'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status')
+            'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status', 'rabies_vaccinated', 'rabies_vaccination_date')
         }),
         ('Τοποθεσία & Στέγαση', {
             'fields': ('cage_number', 'capture_location', 'capture_date')
@@ -78,13 +88,14 @@ class AnimalAdmin(admin.ModelAdmin):
     
     def get_readonly_fields(self, request, obj=None):
         """
-        Make chip_id readonly when editing existing animal to prevent
-        validation errors with inline formsets. Chip_id remains editable
-        when creating new animals.
+        Make chip_id and rabies_vaccination_date readonly when editing existing animal.
         """
         readonly = list(self.readonly_fields)
         if obj:
             readonly.append('chip_id')
+            # Make rabies date readonly if already set
+            if obj.rabies_vaccination_date:
+                readonly.append('rabies_vaccination_date')
         return readonly
     
     def photo_display(self, obj):
@@ -227,17 +238,7 @@ class MedicalRecordAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(Vaccination)
-class VaccinationAdmin(admin.ModelAdmin):
-    list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
-    list_filter = ['vaccine_name', 'date_administered']
-    search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
-    readonly_fields = ['created_by', 'created_at']
-    
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
+
 
 
 @admin.register(AnimalPhoto)

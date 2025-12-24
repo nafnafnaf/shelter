@@ -90,6 +90,24 @@ class Animal(models.Model):
         verbose_name='Καταφύγιο'
     )   
     
+    # Shelter field
+    shelter = models.CharField(
+        max_length=100,
+        default=get_default_shelter_name,
+        verbose_name='Καταφύγιο'
+    )
+    
+    # Rabies vaccination (mandatory by law)
+    rabies_vaccinated = models.BooleanField(
+        default=False,
+        verbose_name='Εμβολιασμένο κατά Λύσσας'
+    )
+    rabies_vaccination_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Ημερομηνία Εμβολιασμού Λύσσας'
+    )
+     
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
     behavior = models.CharField(max_length=25, choices=BEHAVIOR_CHOICES, verbose_name='Συμπεριφορά')
@@ -240,23 +258,17 @@ class AnimalPhoto(models.Model):
 
 class Vaccination(models.Model):
     """Καταγραφή εμβολιασμών ζώων"""
+    VACCINE_CHOICES = # Vaccines organized by species
+
+    # Combined list for the field (includes all + other)
     VACCINE_CHOICES = [
-        ('rabies', 'Λύσσα'),
-        ('distemper', 'Νόσος του Carré'),
-        ('parvovirus', 'Παρβοϊός'),
-        ('hepatitis', 'Ηπατίτιδα'),
+        ('dhppi', 'DHPPi'),
+        ('dappi', 'DAPPi'),
+        ('parainfluenza', 'Parainfluenza'),
+        ('parvovirus', 'Parvovirus'),
         ('leptospirosis', 'Λεπτοσπείρωση'),
-        ('parainfluenza', 'Παραγρίπη'),
-        ('coronavirus', 'Κορωνοϊός'),
-        ('bordetella', 'Μπορντετέλλα'),
-        ('feline_leukemia', 'Λευχαιμία Γάτας'),
-        ('feline_distemper', 'Πανλευκοπενία'),
-        ('calicivirus', 'Καλισιϊός'),
-        ('rhinotracheitis', 'Ρινοτραχειίτιδα'),
-        ('chlamydia', 'Χλαμύδια'),
-        ('fip', 'Λοιμώδης Περιτονίτιδα'),
         ('other', 'Άλλο'),
-    ]
+    ] 
     
     animal = models.ForeignKey(
         Animal, 
