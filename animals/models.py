@@ -86,13 +86,6 @@ class Animal(models.Model):
     # Shelter field
     shelter = models.CharField(
         max_length=100,
-        default=get_default_shelter_name,  # Callable - no parentheses
-        verbose_name='Καταφύγιο'
-    )   
-    
-    # Shelter field
-    shelter = models.CharField(
-        max_length=100,
         default=get_default_shelter_name,
         verbose_name='Καταφύγιο'
     )
@@ -258,9 +251,6 @@ class AnimalPhoto(models.Model):
 
 class Vaccination(models.Model):
     """Καταγραφή εμβολιασμών ζώων"""
-    # Vaccines organized by species
-
-    # Combined list for the field (includes all + other)
     VACCINE_CHOICES = [
         ('dhppi', 'DHPPi'),
         ('dappi', 'DAPPi'),
