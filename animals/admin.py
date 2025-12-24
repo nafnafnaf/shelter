@@ -68,7 +68,7 @@ class AnimalAdmin(admin.ModelAdmin):
             'description': 'Παρέχετε είτε αριθμητική ηλικία ΕΊΤΕ κατηγορία ηλικίας, όχι και τα δύο.'
         }),
         ('Υγεία & Συμπεριφορά', {
-            'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status', 'rabies_vaccinated', 'rabies_vaccination_date')
+            'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status')
         }),
         ('Τοποθεσία & Στέγαση', {
             'fields': ('cage_number', 'capture_location', 'capture_date')
@@ -88,14 +88,11 @@ class AnimalAdmin(admin.ModelAdmin):
     
     def get_readonly_fields(self, request, obj=None):
         """
-        Make chip_id and rabies_vaccination_date readonly when editing existing animal.
+        Make chip_id readonly when editing existing animal.
         """
         readonly = list(self.readonly_fields)
         if obj:
             readonly.append('chip_id')
-            # Make rabies date readonly if already set
-            if obj.rabies_vaccination_date:
-                readonly.append('rabies_vaccination_date')
         return readonly
     
     def photo_display(self, obj):
