@@ -14,7 +14,7 @@ class AnimalPhotoInline(admin.TabularInline):
     fields = ['image', 'is_primary', 'caption']
     readonly_fields = []
 
-class VaccinationInline(admin.StackedInline):
+ class VaccinationInline(admin.StackedInline):
     model = Vaccination
     extra = 1
     fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
@@ -26,15 +26,15 @@ class VaccinationInline(admin.StackedInline):
             'all': ('animals/css/vaccination_inline.css',)
         }
     
-    def get_readonly_fields(self, request, obj=None):
-        """Make fields readonly only for SAVED vaccinations, not new ones"""
-        # This is tricky - we can't distinguish saved vs new in get_readonly_fields
-        # So we make date readonly for the formset itself
-        return []
-    
     def get_formset(self, request, obj=None, **kwargs):
-        """Customize formset to make saved vaccinations readonly"""
+        """Customize formset to make saved vaccinations readonly and shorten labels"""
         formset = super().get_formset(request, obj, **kwargs)
+        
+        # Shorten field labels
+        formset.form.base_fields['vaccine_name'].label = 'Εμβόλιο'
+        formset.form.base_fields['other_vaccine_name'].label = 'Άλλο'
+        formset.form.base_fields['date_administered'].label = 'Ημ/νια'
+        formset.form.base_fields['administered_by'].label = 'Κτηνίατρος'
         
         # Override the formset's __init__ to set readonly on existing instances
         original_init = formset.__init__
@@ -52,10 +52,7 @@ class VaccinationInline(admin.StackedInline):
     
     def has_delete_permission(self, request, obj=None):
         """Prevent deletion of vaccination records"""
-        return False
-        """Prevent deletion of vaccination records"""
-        return False
-    
+        return False  
 # Admin actions for Excel export
 def export_selected_to_excel(modeladmin, request, queryset):
     """Export selected animals to Excel"""
