@@ -14,7 +14,7 @@ class AnimalPhotoInline(admin.TabularInline):
     fields = ['image', 'is_primary', 'caption']
     readonly_fields = []
 
- class VaccinationInline(admin.StackedInline):
+class VaccinationInline(admin.StackedInline):
     model = Vaccination
     extra = 1
     fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
