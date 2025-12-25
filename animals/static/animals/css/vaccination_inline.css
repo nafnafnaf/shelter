@@ -11,20 +11,23 @@
     font-weight: bold;
 }
 
-/* Force all fields on one line */
-.inline-group .inline-related .field-vaccine_name,
-.inline-group .inline-related .field-other_vaccine_name,
-.inline-group .inline-related .field-date_administered,
-.inline-group .inline-related .field-administered_by {
+/* Force all fields on one line - target the actual form-row divs */
+.inline-group .inline-related .form-row {
     display: inline-block !important;
-    margin-right: 15px;
+    margin-right: 15px !important;
     vertical-align: top;
+    width: auto !important;
+}
+
+/* Make the flex-container also inline */
+.inline-group .inline-related .form-row .flex-container {
+    display: inline-block !important;
 }
 
 .inline-group .inline-related .form-row label {
-    display: block;
+    display: inline-block;
     font-weight: bold;
-    margin-bottom: 3px;
+    margin-right: 5px;
     font-size: 11px;
 }
 
@@ -36,15 +39,15 @@
 
 /* Make "Add another" button more visible */
 .add-row a {
-    background: #417690;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 10px;
+    background: #417690 !important;
+    color: white !important;
+    padding: 8px 15px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    margin-top: 10px !important;
 }
 
 .add-row a:hover {
-    background: #2b5368;
+    background: #2b5368 !important;
 }
