@@ -14,16 +14,18 @@ class AnimalPhotoInline(admin.TabularInline):
     fields = ['image', 'is_primary', 'caption']
     readonly_fields = []
 
-class VaccinationInline(admin.TabularInline):
+class VaccinationInline(admin.StackedInline):
     model = Vaccination
     extra = 1
-    fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'batch_number', 'notes']
+    fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
+    verbose_name = "Εμβολιασμός"
+    verbose_name_plural = "Εμβολιασμοί"
+    classes = ['collapse-open']
     
     def get_readonly_fields(self, request, obj=None):
-        """Make date_administered readonly for existing records"""
-        if obj:  # If the parent Animal exists (not new)
-            # Check each inline vaccination - if it exists, make its date readonly
-            return ['date_administered']
+        """Make all fields readonly for existing records except adding new ones"""
+        if obj:  # If the parent Animal exists
+            return ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
         return []
     
     def has_delete_permission(self, request, obj=None):
@@ -56,7 +58,7 @@ class AnimalAdmin(admin.ModelAdmin):
     list_display = ['photo_display', 'name', 'chip_id', 'species', 'gender', 'age_display', 'behavior', 'adoption_status', 'public_visibility', 'qr_code_display']
     list_filter = ['species', 'gender', 'behavior', 'adoption_status', 'public_visibility', 'sterilization_status', 'shelter']
     search_fields = ['name', 'chip_id', 'capture_location', 'shelter']
-    inlines = [MedicalRecordInline, AnimalPhotoInline, VaccinationInline]
+    inlines = [VaccinationInline, MedicalRecordInline, AnimalPhotoInline]
     readonly_fields = ['created_by', 'created_at', 'updated_at', 'entry_date', 'qr_code_preview']
     
     fieldsets = (
