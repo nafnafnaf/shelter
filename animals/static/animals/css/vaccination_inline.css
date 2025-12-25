@@ -1,43 +1,41 @@
-/* Make vaccination inline fields display on ONE line */
-.inline-group .inline-related {
-    margin-bottom: 20px;
+/* Make vaccination inline use flexbox for horizontal layout */
+.inline-group .inline-related fieldset.module.aligned {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
 }
 
 .inline-group .inline-related h3 {
-    background: #e1f0f5;  /* Light blue background */
-    padding: 10px;
-    margin-bottom: 10px;
-    border-left: 3px solid #417690;
-    font-weight: bold;
+    background: #e1f0f5 !important;  /* Light blue background */
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+    border-left: 3px solid #417690 !important;
+    font-weight: bold !important;
 }
 
-/* Force all fields on one line - target the actual form-row divs */
+/* Make each form-row flex item */
 .inline-group .inline-related .form-row {
-    display: inline-block !important;
-    margin-right: 15px !important;
-    vertical-align: top;
+    flex: 0 0 auto !important;
     width: auto !important;
+    float: none !important;
+    clear: none !important;
 }
 
-/* Make the flex-container also inline */
-.inline-group .inline-related .form-row .flex-container {
-    display: inline-block !important;
-}
-
+/* Compact labels and inputs */
 .inline-group .inline-related .form-row label {
-    display: inline-block;
-    font-weight: bold;
-    margin-right: 5px;
-    font-size: 11px;
+    display: inline-block !important;
+    margin-right: 5px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
 }
 
 .inline-group .inline-related .form-row input,
 .inline-group .inline-related .form-row select {
-    width: auto;
-    min-width: 120px;
+    width: auto !important;
+    min-width: 120px !important;
 }
 
-/* Make "Add another" button more visible */
+/* Make "Add another" button blue */
 .add-row a {
     background: #417690 !important;
     color: white !important;
