@@ -1,0 +1,39 @@
+/* Make vaccination inline fields display horizontally */
+.inline-group .inline-related .form-row {
+    display: inline-block;
+    margin-right: 15px;
+    vertical-align: top;
+}
+
+.inline-group .inline-related h3 {
+    background: #f8f8f8;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 3px solid #417690;
+}
+
+.inline-group .inline-related .form-row label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 11px;
+}
+
+.inline-group .inline-related .form-row input,
+.inline-group .inline-related .form-row select {
+    width: auto;
+    min-width: 150px;
+}
+
+/* Make "Add another" button more visible */
+.add-row a {
+    background: #417690;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.add-row a:hover {
+    background: #2b5368;
+}

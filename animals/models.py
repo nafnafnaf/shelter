@@ -35,15 +35,7 @@ class Animal(models.Model):
         ('ΑΓΡΙΟ', 'Άγριο'),
         ('ΕΠΙΚΙΝΔΥΝΟ-ΚΑΡΑΝΤΙΝΑ', 'Επικίνδυνο-Καραντίνα'),
     ]
-    
-    VACCINATION_CHOICES = [
-        ('ΕΜΒΟΛΙΟ_1', 'DHPP'),
-        ('ΕΜΒΟΛΙΟ_2', 'DHPPI'),
-        ('ΕΜΒΟΛΙΟ_3', 'Carre (Distemper)'),
-        ('ΕΜΒΟΛΙΟ_4', 'Adenovirus τύπου 1'),
-        ('ΕΜΒΟΛΙΟ_5', 'Parvovirus'),
-        ('ΕΜΒΟΛΙΟ_6', 'Parainfluenza'),
-    ]
+  
     
     STERILIZATION_CHOICES = [
         ('yes', 'Ναι'),
@@ -95,7 +87,6 @@ class Animal(models.Model):
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
     behavior = models.CharField(max_length=25, choices=BEHAVIOR_CHOICES, verbose_name='Συμπεριφορά')
-    vaccination_status = models.CharField(max_length=15, choices=VACCINATION_CHOICES, verbose_name='Κατάσταση Εμβολιασμού')
     sterilization_status = models.CharField(max_length=15, choices=STERILIZATION_CHOICES, verbose_name='Κατάσταση Στείρωσης')
     
     # Location and Housing

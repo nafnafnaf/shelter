@@ -20,15 +20,39 @@ class VaccinationInline(admin.StackedInline):
     fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
     verbose_name = "Εμβολιασμός"
     verbose_name_plural = "Εμβολιασμοί"
-    classes = ['collapse-open']
+    
+    class Media:
+        css = {
+            'all': ('animals/css/vaccination_inline.css',)
+        }
     
     def get_readonly_fields(self, request, obj=None):
-        """Make all fields readonly for existing records except adding new ones"""
-        if obj:  # If the parent Animal exists
-            return ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
+        """Make fields readonly only for SAVED vaccinations, not new ones"""
+        # This is tricky - we can't distinguish saved vs new in get_readonly_fields
+        # So we make date readonly for the formset itself
         return []
     
+    def get_formset(self, request, obj=None, **kwargs):
+        """Customize formset to make saved vaccinations readonly"""
+        formset = super().get_formset(request, obj, **kwargs)
+        
+        # Override the formset's __init__ to set readonly on existing instances
+        original_init = formset.__init__
+        
+        def custom_init(self, *args, **kwargs):
+            original_init(self, *args, **kwargs)
+            for form in self.forms:
+                if form.instance.pk:  # Existing vaccination
+                    for field_name in ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']:
+                        if field_name in form.fields:
+                            form.fields[field_name].disabled = True
+        
+        formset.__init__ = custom_init
+        return formset
+    
     def has_delete_permission(self, request, obj=None):
+        """Prevent deletion of vaccination records"""
+        return False
         """Prevent deletion of vaccination records"""
         return False
     
@@ -70,7 +94,7 @@ class AnimalAdmin(admin.ModelAdmin):
             'description': 'Παρέχετε είτε αριθμητική ηλικία ΕΊΤΕ κατηγορία ηλικίας, όχι και τα δύο.'
         }),
         ('Υγεία & Συμπεριφορά', {
-            'fields': ('injured', 'behavior', 'vaccination_status', 'sterilization_status')
+            'fields': ('injured', 'behavior',  'sterilization_status')
         }),
         ('Τοποθεσία & Στέγαση', {
             'fields': ('cage_number', 'capture_location', 'capture_date')
