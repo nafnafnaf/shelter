@@ -90,16 +90,7 @@ class Animal(models.Model):
         verbose_name='Καταφύγιο'
     )
     
-    # Rabies vaccination (mandatory by law)
-    rabies_vaccinated = models.BooleanField(
-        default=False,
-        verbose_name='Εμβολιασμένο κατά Λύσσας'
-    )
-    rabies_vaccination_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name='Ημερομηνία Εμβολιασμού Λύσσας'
-    )
+    
      
     # Health and Behavior
     injured = models.BooleanField(default=False, verbose_name='Τραυματισμένο')
@@ -252,13 +243,14 @@ class AnimalPhoto(models.Model):
 class Vaccination(models.Model):
     """Καταγραφή εμβολιασμών ζώων"""
     VACCINE_CHOICES = [
+        ('rabies', 'Λύσσα'),  # Mandatory by law - shown first
         ('dhppi', 'DHPPi'),
         ('dappi', 'DAPPi'),
         ('parainfluenza', 'Parainfluenza'),
         ('parvovirus', 'Parvovirus'),
         ('leptospirosis', 'Λεπτοσπείρωση'),
         ('other', 'Άλλο'),
-    ] 
+    ]
     
     animal = models.ForeignKey(
         Animal, 
