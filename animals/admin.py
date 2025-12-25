@@ -237,7 +237,37 @@ class MedicalRecordAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-
+@admin.register(Vaccination)
+class VaccinationAdmin(admin.ModelAdmin):
+    list_display = ['animal', 'vaccine_name', 'date_administered', 'next_due_date', 'administered_by', 'created_by']
+    list_filter = ['vaccine_name', 'date_administered']
+    search_fields = ['animal__name', 'animal__chip_id', 'administered_by']
+    readonly_fields = ['created_by', 'created_at']
+    
+    def get_queryset(self, request):
+        """Show rabies vaccinations first"""
+        qs = super().get_queryset(request)
+        return qs.extra(select={'is_rabies': "CASE WHEN vaccine_name = 'rabies' THEN 0 ELSE 1 END"}).order_by('is_rabies', '-date_administered')
+    
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Make date_administered readonly after save (prevent modification)
+        """
+        readonly = list(self.readonly_fields)
+        if obj:  # Editing existing vaccination
+            readonly.append('date_administered')
+        return readonly
+    
+    def has_delete_permission(self, request, obj=None):
+        """
+        Prevent deletion of all vaccination records
+        """
+        return False
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(AnimalPhoto)
