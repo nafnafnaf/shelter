@@ -257,3 +257,16 @@ ORGANIZATION_NAME = os.environ.get('ORGANIZATION_NAME', 'Καταφύγιο Ζώ
 admin_module.site.site_header = f"{ORGANIZATION_NAME} - {VERSION}"
 admin_module.site.site_title = "Καταφύγιο Ζώων"
 admin_module.site.index_title = "Διαχείριση Ζώων"
+
+
+# Customize admin site header and title
+from django.contrib import admin as admin_module
+from .version import get_version
+import os
+
+VERSION = get_version()
+ORGANIZATION_NAME = os.environ.get('ORGANIZATION_NAME', 'Καταφύγιο Ζώων')
+
+admin_module.site.site_header = f"{ORGANIZATION_NAME} - {VERSION}"
+admin_module.site.site_title = "Καταφύγιο Ζώων"
+admin_module.site.index_title = "Διαχείριση Ζώων"
