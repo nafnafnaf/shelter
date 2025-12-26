@@ -234,5 +234,13 @@ class AnimalAdmin(admin.ModelAdmin):
     make_private.short_description = 'Απόκρυψη επιλεγμένων ζώων από το κοινό'
     
     def export_selected_to_excel(self, request, queryset):
-        """Export selected animals to Excel"""
-        return export_animals_to_excel(queryset
+            """Export selected animals to Excel"""
+            return export_animals_to_excel(queryset)
+    export_selected_to_excel.short_description = 'Εξαγωγή επιλεγμένων σε Excel'
+        
+    def export_all_to_excel(self, request, queryset):
+        """Export all animals (respecting current filters) to Excel"""
+        # Get all animals with current filters applied
+        all_animals = self.get_queryset(request)
+        return export_animals_to_excel(all_animals)
+    export_all_to_excel.short_description = 'Εξαγωγή όλων σε Excel (με φίλτρα)' 
