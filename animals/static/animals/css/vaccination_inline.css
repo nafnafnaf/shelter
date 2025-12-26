@@ -4,8 +4,9 @@
     flex-wrap: wrap !important;
     gap: 15px !important;
 }
-
-.inline-group .inline-related h3 {
+/* Target the h3 specifically within vaccinations group */
+#vaccinations-group .inline-related h3,
+div[id*="vaccinations"] .inline-related h3 {
     background: #2b5368 !important;  /* Dark blue background */
     color: white !important;  /* White text for contrast */ 
     padding: 10px !important;

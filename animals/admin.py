@@ -23,11 +23,11 @@ class VaccinationInline(admin.StackedInline):
     
     class Media:
         css = {
-            'all': ('animals/css/vaccination_inline.css?v=2',)
+            'all': ('animals/css/vaccination_inline.css?v=3',)
         }
     
     def get_formset(self, request, obj=None, **kwargs):
-        """Customize formset to make saved vaccinations readonly and shorten labels"""
+        """Customize formset to make saved vaccinations readonly and show date in header"""
         formset = super().get_formset(request, obj, **kwargs)
         
         # Shorten field labels
@@ -52,20 +52,7 @@ class VaccinationInline(admin.StackedInline):
     
     def has_delete_permission(self, request, obj=None):
         """Prevent deletion of vaccination records"""
-        return False  
-# Admin actions for Excel export
-def export_selected_to_excel(modeladmin, request, queryset):
-    """Export selected animals to Excel"""
-    return generate_animals_excel(queryset)
-export_selected_to_excel.short_description = "Εξαγωγή επιλεγμένων σε Excel"
-
-def export_all_to_excel(modeladmin, request, queryset):
-    """Export all animals to Excel"""
-    from animals.models import Animal
-    all_animals = Animal.objects.all()
-    return generate_animals_excel(all_animals)
-export_all_to_excel.short_description = "Εξαγωγή όλων σε Excel"
-
+        return False
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
     actions = [export_selected_to_excel, export_all_to_excel, 'regenerate_qr_codes', 'make_public', 'make_private']
