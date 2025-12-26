@@ -17,7 +17,7 @@ class AnimalPhotoInline(admin.TabularInline):
 class VaccinationInline(admin.StackedInline):
     model = Vaccination
     extra = 1
-    fields = ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']
+    fields =['vaccine_name', 'other_vaccine_name', 'batch_number', 'date_administered', 'administered_by'] 
     verbose_name = "Εμβολιασμός"
     verbose_name_plural = "Εμβολιασμοί"
     
@@ -33,6 +33,7 @@ class VaccinationInline(admin.StackedInline):
         # Shorten field labels
         formset.form.base_fields['vaccine_name'].label = 'Εμβόλιο'
         formset.form.base_fields['other_vaccine_name'].label = 'Σκεύασμα'
+        formset.form.base_fields['batch_number'].label = 'Αρ. Παρτίδας'
         formset.form.base_fields['date_administered'].label = 'Ημ/νια'
         formset.form.base_fields['administered_by'].label = 'Κτηνίατρος'
         
@@ -43,7 +44,7 @@ class VaccinationInline(admin.StackedInline):
             original_init(self, *args, **kwargs)
             for form in self.forms:
                 if form.instance.pk:  # Existing vaccination
-                    for field_name in ['vaccine_name', 'other_vaccine_name', 'date_administered', 'administered_by']:
+                    for field_name in ['vaccine_name', 'other_vaccine_name', 'batch_number', 'date_administered', 'administered_by']: 
                         if field_name in form.fields:
                             form.fields[field_name].disabled = True
         
