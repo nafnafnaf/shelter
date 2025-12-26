@@ -23,7 +23,7 @@ class VaccinationInline(admin.StackedInline):
     
     class Media:
         css = {
-            'all': ('animals/css/vaccination_inline.css',)
+            'all': ('animals/css/vaccination_inline.css?v=2',)
         }
     
     def get_formset(self, request, obj=None, **kwargs):
