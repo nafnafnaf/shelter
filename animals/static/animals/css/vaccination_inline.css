@@ -6,8 +6,9 @@
 }
 
 .inline-group .inline-related h3 {
+{
     background: #2b5368 !important;  /* Dark blue background */
-    color: white !important;  /* White text */ 
+    color: white !important;  /* White text for contrast */ 
     padding: 10px !important;
     margin-bottom: 10px !important;
     border-left: 3px solid #417690 !important;
