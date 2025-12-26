@@ -6,7 +6,6 @@
 }
 
 .inline-group .inline-related h3 {
-{
     background: #2b5368 !important;  /* Dark blue background */
     color: white !important;  /* White text for contrast */ 
     padding: 10px !important;
@@ -15,7 +14,7 @@
     font-weight: bold !important;
 }
 
-/* Make each form-row flex itemisad*/
+/* Make each form-row flex item */
 .inline-group .inline-related .form-row {
     flex: 0 0 auto !important;
     width: auto !important;
