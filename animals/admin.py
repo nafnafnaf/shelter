@@ -32,7 +32,7 @@ class VaccinationInline(admin.StackedInline):
         
         # Shorten field labels
         formset.form.base_fields['vaccine_name'].label = 'Εμβόλιο'
-        formset.form.base_fields['other_vaccine_name'].label = 'Άλλο'
+        formset.form.base_fields['other_vaccine_name'].label = 'Σκεύασμα'
         formset.form.base_fields['date_administered'].label = 'Ημ/νια'
         formset.form.base_fields['administered_by'].label = 'Κτηνίατρος'
         
