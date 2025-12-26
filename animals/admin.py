@@ -31,7 +31,7 @@ class VaccinationInline(admin.StackedInline):
         """Customize formset to make saved vaccinations readonly and show date in header"""
         formset = super().get_formset(request, obj, **kwargs)
         
-        # Shorten field labels
+        # Shsorten field labels
         formset.form.base_fields['vaccine_name'].label = 'Εμβόλιο'
         formset.form.base_fields['other_vaccine_name'].label = 'Σκεύασμα'
         formset.form.base_fields['batch_number'].label = 'Αρ. Παρτίδας'
