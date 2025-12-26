@@ -25,7 +25,7 @@ class VaccinationInline(admin.StackedInline):
         css = {
             'all': ('animals/css/vaccination_inline.css?v=3',)
         }
-        js = ('animals/js/vaccination_filter.js',) 
+        js = ('animals/js/vaccination_filter.js?v=2',) 
     
     def get_formset(self, request, obj=None, **kwargs):
         """Customize formset to make saved vaccinations readonly and show date in header"""
