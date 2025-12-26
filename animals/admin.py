@@ -55,7 +55,7 @@ class VaccinationInline(admin.StackedInline):
         return False
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    actions = [export_selected_to_excel, export_all_to_excel, 'regenerate_qr_codes', 'make_public', 'make_private']
+    actions =['regenerate_qr_codes', 'make_public', 'make_private'] 
     
     def get_actions(self, request):
         actions = super().get_actions(request)
