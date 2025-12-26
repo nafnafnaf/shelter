@@ -1,4 +1,4 @@
-(function($) {
+(function() {
     'use strict';
     
     // Define species-specific vaccines
@@ -9,20 +9,19 @@
     };
     
     function filterVaccineChoices() {
-        // Get the animal's species from the form
         const speciesSelect = document.getElementById('id_species');
         if (!speciesSelect) return;
         
-        const species = speciesSelect.value;
+        const species = speciesSelect.value || 'other';
+        const allowedVaccines = VACCINE_LISTS[species] || VACCINE_LISTS['other'];
+        
+        console.log('Filtering vaccines for species:', species, 'Allowed:', allowedVaccines);
         
         // Filter all vaccine dropdowns
-        document.querySelectorAll('[id^="id_vaccinations-"][id$="-vaccine_name"]').forEach(function(select) {
+        const vaccineSelects = document.querySelectorAll('[id^="id_vaccinations-"][id$="-vaccine_name"]');
+        vaccineSelects.forEach(function(select) {
             if (select.disabled) return; // Skip readonly fields
             
-            const currentValue = select.value;
-            const allowedVaccines = VACCINE_LISTS[species] || VACCINE_LISTS['other'];
-            
-            // Show/hide options based on species
             Array.from(select.options).forEach(function(option) {
                 if (option.value === '') {
                     option.style.display = ''; // Always show "-------"
@@ -32,28 +31,37 @@
                     option.style.display = 'none';
                 }
             });
-            
-            // Reset if current value is not allowed
-            if (currentValue && !allowedVaccines.includes(currentValue)) {
-                select.value = '';
-            }
         });
     }
     
-    // Run on page load
-    $(document).ready(function() {
+    // Run immediately on script load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', filterVaccineChoices);
+    } else {
         filterVaccineChoices();
-        
-        // Re-filter when species changes
+    }
+    
+    // Also run after a short delay to catch late-loaded inlines
+    setTimeout(filterVaccineChoices, 500);
+    setTimeout(filterVaccineChoices, 1000);
+    
+    // Listen for species changes
+    setTimeout(function() {
         const speciesSelect = document.getElementById('id_species');
         if (speciesSelect) {
-            speciesSelect.addEventListener('change', filterVaccineChoices);
+            speciesSelect.addEventListener('change', function() {
+                console.log('Species changed to:', this.value);
+                filterVaccineChoices();
+            });
         }
-        
-        // Re-filter when new vaccination inline is added
-        $(document).on('formset:added', function() {
-            filterVaccineChoices();
-        });
-    });
+    }, 100);
     
-})(django.jQuery);
+    // Listen for new inline forms being added
+    if (typeof django !== 'undefined' && django.jQuery) {
+        django.jQuery(document).on('formset:added', function() {
+            console.log('New vaccination form added');
+            setTimeout(filterVaccineChoices, 100);
+        });
+    }
+    
+})();
