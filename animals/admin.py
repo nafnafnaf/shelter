@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from .export_utils import generate_animals_excel
 from django.urls import reverse
 from .models import Animal, MedicalRecord, AnimalPhoto, Vaccination
-
+from .export_utils import export_animals_to_excel, export_vaccinations_to_excel
 class MedicalRecordInline(admin.TabularInline):
     model = MedicalRecord
     extra = 1
@@ -56,7 +56,7 @@ class VaccinationInline(admin.StackedInline):
         return False
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    actions =['regenerate_qr_codes', 'make_public', 'make_private'] 
+    actions =['export_selected_to_excel', 'export_all_to_excel', 'regenerate_qr_codes', 'make_public', 'make_private']
     
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -231,7 +231,17 @@ class AnimalAdmin(admin.ModelAdmin):
         count = queryset.update(public_visibility=False)
         self.message_user(request, f'Successfully made {count} animals private.')
     make_private.short_description = 'Απόκρυψη επιλεγμένων ζώων από το κοινό'
-
+    def export_selected_to_excel(self, request, queryset):
+        """Export selected animals to Excel"""
+        return export_animals_to_excel(queryset)
+    export_selected_to_excel.short_description = 'Εξαγωγή επιλεγμένων σε Excel'
+    
+    def export_all_to_excel(self, request, queryset):
+        """Export all animals (respecting current filters) to Excel"""
+        # Get all animals with current filters applied
+        all_animals = self.get_queryset(request)
+        return export_animals_to_excel(all_animals)
+    export_all_to_excel.short_description = 'Εξαγωγή όλων σε Excel (με φίλτρα)'
 
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
@@ -244,7 +254,7 @@ class MedicalRecordAdmin(admin.ModelAdmin):
         if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
-
+      
 
 @admin.register(Vaccination)
 class VaccinationAdmin(admin.ModelAdmin):
